@@ -1,7 +1,21 @@
-export default function History() {
-  return (
-    <div className="p-8 text-3xl font-bold">
-      History Page
-    </div>
-  );
+export default function History(){
+
+return (
+
+<div className="p-6">
+
+<h1 className="text-3xl font-bold">
+Scan History
+</h1>
+
+
+<p className="mt-5">
+No scans available.
+</p>
+
+
+</div>
+
+);
+
 }
