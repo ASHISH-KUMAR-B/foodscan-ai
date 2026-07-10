@@ -28,10 +28,6 @@ jobs:
         run: |
           npm install --include=optional
         
-      - name: Check installed Rolldown packages
-        working-directory: client
-        run: npm ls @rolldown/binding-linux-x64-gnu || true
-        
       - name: Lint Client
         working-directory: client
         run: npm run lint
