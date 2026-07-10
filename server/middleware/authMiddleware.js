@@ -1,4 +1,4 @@
-const protect = (req, res, next) => {
+const protect = (req, res) => {
   return res.status(501).json({ message: 'Auth middleware not implemented yet.' });
 };
 
