@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import scanRoutes from "./routes/scanRoutes.js";
+
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/scan", scanRoutes);
 app.use("/uploads",express.static(path.join(__dirname, "uploads")));
+
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -23,3 +25,4 @@ app.get("/", (req, res) => {
 });
 
 export default app;
+
