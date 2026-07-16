@@ -43,9 +43,17 @@ export default function Login() {
 
 	return (
 		<div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-md items-center px-4 py-10">
-			<Card className="w-full p-6">
-				<h1 className="text-2xl font-bold text-slate-900">Login</h1>
-				<p className="mt-1 text-sm text-slate-600">Welcome back to FoodScan AI.</p>
+			<Card className="w-full p-8 sm:p-10">
+				<span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-emerald-900">
+					Welcome back
+				</span>
+
+				<h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">
+					Login
+				</h1>
+				<p className="mt-2 text-sm leading-6 text-slate-600">
+					Sign in to continue scanning food labels and reviewing insights.
+				</p>
 
 				<form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
 					<Input
@@ -59,7 +67,7 @@ export default function Login() {
 					<Input
 						label="Password"
 						type="password"
-						placeholder="••••••••"
+						placeholder="Password"
 						error={errors.password?.message}
 						{...register("password")}
 					/>
@@ -69,9 +77,9 @@ export default function Login() {
 					</Button>
 				</form>
 
-				<p className="mt-4 text-sm text-slate-600">
+				<p className="mt-5 text-sm text-slate-600">
 					Don&apos;t have an account?{" "}
-					<Link to={ROUTES.REGISTER} className="font-medium text-green-700 hover:underline">
+					<Link to={ROUTES.REGISTER} className="font-medium text-emerald-700 hover:underline">
 						Register
 					</Link>
 				</p>

@@ -6,13 +6,17 @@ const Input = forwardRef(function Input(
 ) {
   return (
     <label className="block">
-      {label && <span className="mb-2 block text-sm font-medium text-slate-700">{label}</span>}
+      {label && (
+        <span className="mb-2 block text-sm font-medium text-slate-700">
+          {label}
+        </span>
+      )}
       <input
         ref={ref}
-        className={`w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-200 ${className}`}
+        className={`w-full rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 ${className}`}
         {...props}
       />
-      {error && <span className="mt-1 block text-xs text-red-600">{error}</span>}
+      {error && <span className="mt-2 block text-xs text-rose-600">{error}</span>}
     </label>
   );
 });

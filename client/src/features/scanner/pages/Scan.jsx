@@ -1,188 +1,393 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import Card from "../../../components/common/Card";
-import ImageUploader from "../../../components/ImageUploader";
+import EmptyState from "../../../components/common/EmptyState.jsx";
+import Card from "../../../components/common/Card.jsx";
+import ImageUploader from "../../../components/ImageUploader.jsx";
 
-import ScanPreview from "../components/ScanPreview";
+import ScanPreview from "../components/ScanPreview.jsx";
+import { useScanMutation } from "../hooks/useScanMutation.js";
 
-import { useScanMutation } from "../hooks/useScanMutation";
+const nutritionFields = [
+  { key: "calories", label: "Calories" },
+  { key: "protein", label: "Protein" },
+  { key: "fat", label: "Fat" },
+  { key: "carbohydrates", label: "Carbs" },
+  { key: "sugar", label: "Sugar" },
+  { key: "fiber", label: "Fiber" },
+  { key: "sodium", label: "Sodium" },
+];
+
+function formatValue(value) {
+  if (value === 0) {
+    return "0";
+  }
+
+  if (value === null || value === undefined || value === "") {
+    return "N/A";
+  }
+
+  return value;
+}
+
+function getScoreTone(score) {
+  if (score >= 80) {
+    return {
+      badge: "bg-emerald-100 text-emerald-900",
+      ring: "from-emerald-500 to-lime-400",
+      label: "Excellent",
+    };
+  }
+
+  if (score >= 60) {
+    return {
+      badge: "bg-amber-100 text-amber-900",
+      ring: "from-amber-500 to-orange-400",
+      label: "Moderate",
+    };
+  }
+
+  return {
+    badge: "bg-rose-100 text-rose-900",
+    ring: "from-rose-500 to-pink-400",
+    label: "Needs attention",
+  };
+}
+
+function SectionCard({ title, children, tone = "light" }) {
+  const isDark = tone === "dark";
+
+  return (
+    <Card
+      className={`p-6 sm:p-7 ${isDark ? "border-slate-800 bg-slate-950 text-white" : ""}`}
+    >
+      <h3 className={`text-lg font-bold ${isDark ? "text-white" : "text-slate-950"}`}>
+        {title}
+      </h3>
+      <div className="mt-4">{children}</div>
+    </Card>
+  );
+}
+
+function InfoPill({ label, value, tone = "neutral" }) {
+  const toneClass = {
+    neutral: "bg-slate-100 text-slate-700",
+    emerald: "bg-emerald-100 text-emerald-900",
+    amber: "bg-amber-100 text-amber-900",
+    rose: "bg-rose-100 text-rose-900",
+  }[tone];
+
+  return (
+    <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${toneClass}`}>
+      <span className="block text-[11px] uppercase tracking-[0.22em] opacity-70">
+        {label}
+      </span>
+      <span className="mt-1 block text-base font-semibold">{value}</span>
+    </div>
+  );
+}
+
+function Badge({ children, tone = "neutral" }) {
+  const toneClass = {
+    neutral: "bg-slate-100 text-slate-700",
+    emerald: "bg-emerald-100 text-emerald-900",
+    amber: "bg-amber-100 text-amber-900",
+    rose: "bg-rose-100 text-rose-900",
+  }[tone];
+
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${toneClass}`}
+    >
+      {children}
+    </span>
+  );
+}
 
 export default function Scan() {
-	const [image, setImage] = useState(null);
-	const [preview, setPreview] = useState("");
-	const [result, setResult] = useState(null);
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState("");
+  const [result, setResult] = useState(null);
 
-	const { mutate, isPending } = useScanMutation();
+  const { mutate, isPending } = useScanMutation();
 
-	const handleImageSelect = (file) => {
-		if (!file) return;
+  useEffect(() => {
+    return () => {
+      if (preview) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
 
-		setImage(file);
-		setPreview(URL.createObjectURL(file));
-		setResult(null);
-	};
+  const handleImageSelect = (file) => {
+    if (!file) return;
 
-	const handleAnalyze = () => {
-		if (!image) return;
+    if (preview) {
+      URL.revokeObjectURL(preview);
+    }
 
-		const formData = new FormData();
-		formData.append("image", image);
+    setImage(file);
+    setPreview(URL.createObjectURL(file));
+    setResult(null);
+  };
 
-		mutate(formData, {
-			onSuccess: (response) => {
-				console.log("AI Response:", response);
+  const handleAnalyze = () => {
+    if (!image) return;
 
-				setResult(response?.data?.data || null);
-			},
-		});
-	};
+    const formData = new FormData();
+    formData.append("image", image);
 
-	const handleRemove = () => {
-		if (preview) {
-			URL.revokeObjectURL(preview);
-		}
+    mutate(formData, {
+      onSuccess: (response) => {
+        setResult(response?.data?.data || null);
+      },
+    });
+  };
 
-		setImage(null);
-		setPreview("");
-		setResult(null);
-	};
+  const handleRemove = () => {
+    if (preview) {
+      URL.revokeObjectURL(preview);
+    }
 
-	return (
-		<div className="mx-auto max-w-3xl p-6">
-			<Card className="p-6">
-				<h1 className="mb-2 text-3xl font-bold">
-					Scan Food Product
-				</h1>
+    setImage(null);
+    setPreview("");
+    setResult(null);
+  };
 
-				<p className="mb-6 text-slate-600">
-					Upload or capture a food package image to analyze ingredients and health information.
-				</p>
+  const score = result?.healthScore ?? 0;
+  const scoreTone = getScoreTone(score);
+  const ingredients = result?.ingredients ?? [];
+  const allergens = result?.allergens ?? [];
+  const restrictedIngredients = result?.restrictedIngredients ?? [];
+  const tips = result?.tips ?? [];
 
-				<ImageUploader
-					onSelect={handleImageSelect}
-					accept="image/*"
-					capture="environment"
-				/>
+  return (
+    <div className="space-y-8 py-8 sm:py-12">
+      <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <Card className="p-7 sm:p-8">
+          <span className="inline-flex rounded-full border border-emerald-200 bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-emerald-900">
+            Scan workspace
+          </span>
 
-				<ScanPreview
-					preview={preview}
-					loading={isPending}
-					onAnalyze={handleAnalyze}
-					onRemove={handleRemove}
-				/>
+          <h1 className="mt-4 max-w-2xl text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
+            Camera-first OCR for packaged food labels.
+          </h1>
 
-				{result && (
-					<div className="mt-8 space-y-5 rounded-xl bg-slate-50 p-6">
+          <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
+            Upload a package photo, let the backend clean the OCR text, and
+            review ingredients, allergens, and nutrition in one structured view.
+          </p>
 
-						<h2 className="text-2xl font-bold">
-							🤖 Food Analysis
-						</h2>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <Badge tone="emerald">OCR extraction</Badge>
+            <Badge tone="amber">Health score</Badge>
+            <Badge tone="neutral">Nutrition facts</Badge>
+            <Badge tone="rose">Allergen checks</Badge>
+          </div>
+        </Card>
 
-						<div>
-							<p>
-								<strong>📦 Product:</strong>{" "}
-								{result.productName || "Unknown"}
-							</p>
+        <Card className="overflow-hidden bg-slate-950 p-0 text-white">
+          <div className="h-full bg-[radial-gradient(circle_at_top_right,rgba(163,230,53,0.2),transparent_32%),linear-gradient(135deg,#020617_0%,#0f172a_48%,#064e3b_100%)] p-7 sm:p-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-lime-200">
+              How it works
+            </p>
 
-							<p>
-								<strong>🏢 Brand:</strong>{" "}
-								{result.brand || "Unknown"}
-							</p>
+            <div className="mt-5 space-y-3">
+              {[
+                "Capture or upload the ingredient panel.",
+                "Run OCR and cleanup in the backend.",
+                "Review parsed ingredients, nutrition, and warnings.",
+              ].map((step, index) => (
+                <div
+                  key={step}
+                  className="flex items-start gap-4 rounded-3xl border border-white/10 bg-white/5 px-4 py-4"
+                >
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/10 text-sm font-bold text-lime-200">
+                    0{index + 1}
+                  </span>
+                  <p className="text-sm leading-6 text-white/85">{step}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
+      </section>
 
-							<p>
-								<strong>❤️ Health Score:</strong>{" "}
-								{result.healthScore || 0}/100
-							</p>
-						</div>
+      <div className="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
+        <div className="space-y-6">
+          <ImageUploader
+            onSelect={handleImageSelect}
+            accept="image/*"
+            capture="environment"
+          />
 
+          <ScanPreview
+            preview={preview}
+            loading={isPending}
+            onAnalyze={handleAnalyze}
+            onRemove={handleRemove}
+          />
+        </div>
 
-						<div>
-							<h3 className="font-semibold text-lg">
-								🥣 Ingredients
-							</h3>
+        <div className="space-y-6">
+          {result ? (
+            <>
+              <SectionCard title="Scan result">
+                <div className="grid gap-6 md:grid-cols-[auto_1fr] md:items-start">
+                  <div
+                    className={`flex h-32 w-32 flex-col items-center justify-center rounded-[32px] bg-gradient-to-br ${scoreTone.ring} text-white shadow-[0_24px_60px_-24px_rgba(15,23,42,0.6)]`}
+                  >
+                    <span className="text-4xl font-bold">{score}</span>
+                    <span className="mt-1 text-xs uppercase tracking-[0.24em] text-white/80">
+                      /100
+                    </span>
+                  </div>
 
-							<ul className="list-disc pl-6">
-								{result.ingredients?.length ? (
-									result.ingredients.map((item, index) => (
-										<li key={index}>
-											{item}
-										</li>
-									))
-								) : (
-									<li>No ingredients detected</li>
-								)}
-							</ul>
-						</div>
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <Badge tone={score >= 80 ? "emerald" : score >= 60 ? "amber" : "rose"}>
+                        {scoreTone.label}
+                      </Badge>
+                      <span className="text-sm font-medium text-slate-500">
+                        Health score
+                      </span>
+                    </div>
 
+                    <div>
+                      <h2 className="text-2xl font-bold text-slate-950">
+                        {result.verdict || "Analysis complete"}
+                      </h2>
+                      <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                        {result.productName || "Unknown product"}{" "}
+                        {result.brand ? `• ${result.brand}` : ""}
+                      </p>
+                    </div>
 
-						<div>
-							<h3 className="font-semibold text-lg">
-								⚠ Allergens
-							</h3>
+                    <div className="flex flex-wrap gap-2">
+                      <InfoPill
+                        label="Ingredients"
+                        value={ingredients.length ? `${ingredients.length} detected` : "None"}
+                      />
+                      <InfoPill
+                        label="Allergens"
+                        value={allergens.length ? `${allergens.length} flagged` : "None detected"}
+                        tone={allergens.length ? "amber" : "emerald"}
+                      />
+                      <InfoPill
+                        label="Restricted"
+                        value={
+                          restrictedIngredients.length
+                            ? `${restrictedIngredients.length} flagged`
+                            : "None detected"
+                        }
+                        tone={restrictedIngredients.length ? "rose" : "emerald"}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </SectionCard>
 
-							<ul className="list-disc pl-6">
-								{result.allergens?.length ? (
-									result.allergens.map((item, index) => (
-										<li key={index}>
-											{item}
-										</li>
-									))
-								) : (
-									<li>No allergens detected</li>
-								)}
-							</ul>
-						</div>
+              <SectionCard title="Nutrition">
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {nutritionFields.map((item) => (
+                    <InfoPill
+                      key={item.key}
+                      label={item.label}
+                      value={formatValue(result.nutrition?.[item.key])}
+                    />
+                  ))}
+                </div>
+              </SectionCard>
 
+              <div className="grid gap-6 lg:grid-cols-2">
+                <SectionCard title="Ingredients">
+                  {ingredients.length ? (
+                    <div className="flex flex-wrap gap-2">
+                      {ingredients.map((item) => (
+                        <Badge key={item} tone="neutral">
+                          {item}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm leading-6 text-slate-600">
+                      No ingredients were detected from the current image.
+                    </p>
+                  )}
+                </SectionCard>
 
-						<div>
-							<h3 className="font-semibold text-lg">
-								💡 Health Tips
-							</h3>
+                <SectionCard title="Alerts">
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+                        Allergens
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {allergens.length ? (
+                          allergens.map((item) => (
+                            <Badge key={item} tone="amber">
+                              {item}
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-sm text-slate-600">
+                            No allergens detected.
+                          </span>
+                        )}
+                      </div>
+                    </div>
 
-							<ul className="list-disc pl-6">
-								{result.tips?.length ? (
-									result.tips.map((item, index) => (
-										<li key={index}>
-											{item}
-										</li>
-									))
-								) : (
-									<li>No tips available</li>
-								)}
-							</ul>
-						</div>
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+                        Restricted ingredients
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {restrictedIngredients.length ? (
+                          restrictedIngredients.map((item) => (
+                            <Badge key={item} tone="rose">
+                              {item}
+                            </Badge>
+                          ))
+                        ) : (
+                          <span className="text-sm text-slate-600">
+                            No restricted ingredients detected.
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </SectionCard>
+              </div>
 
-
-						<div>
-							<h3 className="font-semibold text-lg">
-								🍎 Nutrition
-							</h3>
-
-							<p>
-								Calories: {result.nutrition?.calories || "N/A"}
-							</p>
-
-							<p>
-								Protein: {result.nutrition?.protein || "N/A"}
-							</p>
-
-							<p>
-								Fat: {result.nutrition?.fat || "N/A"}
-							</p>
-
-							<p>
-								Carbohydrates: {result.nutrition?.carbohydrates || "N/A"}
-							</p>
-
-							<p>
-								Sugar: {result.nutrition?.sugar || "N/A"}
-							</p>
-						</div>
-
-					</div>
-				)}
-
-			</Card>
-		</div>
-	);
+              <SectionCard title="Health tips">
+                {tips.length ? (
+                  <ul className="space-y-3">
+                    {tips.map((item) => (
+                      <li
+                        key={item}
+                        className="flex gap-3 rounded-2xl border border-slate-200/80 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-700"
+                      >
+                        <span className="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm leading-6 text-slate-600">
+                    No tips were generated for this scan yet.
+                  </p>
+                )}
+              </SectionCard>
+            </>
+          ) : (
+            <Card className="p-6 sm:p-8">
+              <EmptyState
+                title="Your analysis will appear here"
+                description="Choose a clear food label image, run the scan, and the OCR results, ingredient parsing, and nutrition summary will populate this panel."
+              />
+            </Card>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
