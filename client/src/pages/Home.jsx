@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 import Card from "../components/common/Card.jsx";
 import { ROUTES } from "../constants/routes.js";
+import { useTheme } from "../context/ThemeContext.jsx";
 
 const highlights = [
   {
@@ -22,6 +23,8 @@ const highlights = [
 ];
 
 export default function Home() {
+  const { isDark } = useTheme();
+
   return (
     <div className="space-y-10 py-8 sm:py-12">
       <section className="grid items-center gap-8 lg:grid-cols-[1.15fr_0.85fr]">
@@ -31,11 +34,19 @@ export default function Home() {
           </span>
 
           <div className="space-y-4">
-            <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+            <h1
+              className={`max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl ${
+                isDark ? "text-white" : "text-slate-950"
+              }`}
+            >
               Turn a food label into clear health insights in seconds.
             </h1>
 
-            <p className="max-w-2xl text-lg leading-8 text-slate-600">
+            <p
+              className={`max-w-2xl text-lg leading-8 ${
+                isDark ? "text-slate-300" : "text-slate-600"
+              }`}
+            >
               Scan packaged food labels, extract ingredients and nutrition
               details, detect allergens, and get a cleaner view of what is
               actually inside the product.
@@ -65,8 +76,20 @@ export default function Home() {
               ["Alerts", "Allergens and restricted ingredients"],
             ].map(([title, text]) => (
               <Card key={title} className="p-4">
-                <p className="text-sm font-semibold text-emerald-800">{title}</p>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{text}</p>
+                <p
+                  className={`text-sm font-semibold ${
+                    isDark ? "text-emerald-200" : "text-emerald-800"
+                  }`}
+                >
+                  {title}
+                </p>
+                <p
+                  className={`mt-2 text-sm leading-6 ${
+                    isDark ? "text-slate-300" : "text-slate-600"
+                  }`}
+                >
+                  {text}
+                </p>
               </Card>
             ))}
           </div>
@@ -110,8 +133,16 @@ export default function Home() {
       <section className="grid gap-4 md:grid-cols-3">
         {highlights.map((item) => (
           <Card key={item.title} className="p-6">
-            <h3 className="text-lg font-bold text-slate-950">{item.title}</h3>
-            <p className="mt-3 text-sm leading-6 text-slate-600">{item.description}</p>
+            <h3 className={`text-lg font-bold ${isDark ? "text-white" : "text-slate-950"}`}>
+              {item.title}
+            </h3>
+            <p
+              className={`mt-3 text-sm leading-6 ${
+                isDark ? "text-slate-300" : "text-slate-600"
+              }`}
+            >
+              {item.description}
+            </p>
           </Card>
         ))}
       </section>

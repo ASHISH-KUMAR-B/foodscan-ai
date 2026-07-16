@@ -1,3 +1,5 @@
+import { useTheme } from "../../context/ThemeContext.jsx";
+
 const variantStyles = {
   primary:
     "bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-500 text-white shadow-[0_18px_40px_-20px_rgba(22,163,74,0.85)] hover:-translate-y-0.5 hover:shadow-[0_24px_48px_-20px_rgba(22,163,74,0.95)]",
@@ -22,9 +24,21 @@ export default function Button({
   size = "md",
   ...props
 }) {
+  const { isDark } = useTheme();
+  const themeVariantStyles = {
+    primary: variantStyles.primary,
+    secondary: isDark
+      ? "border border-white/10 bg-white/5 text-white shadow-sm hover:border-white/20 hover:bg-white/10"
+      : variantStyles.secondary,
+    ghost: isDark
+      ? "text-emerald-50 hover:bg-white/10"
+      : variantStyles.ghost,
+    danger: variantStyles.danger,
+  };
+
   return (
     <button
-      className={`inline-flex items-center justify-center rounded-full font-medium transition duration-200 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none ${variantStyles[variant] ?? variantStyles.primary} ${sizeStyles[size] ?? sizeStyles.md} ${className}`}
+      className={`inline-flex items-center justify-center rounded-full font-medium transition duration-200 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none ${themeVariantStyles[variant] ?? themeVariantStyles.primary} ${sizeStyles[size] ?? sizeStyles.md} ${className}`}
       {...props}
     >
       {children}

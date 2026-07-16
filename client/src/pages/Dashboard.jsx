@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 import Card from "../components/common/Card.jsx";
 import { ROUTES } from "../constants/routes.js";
+import { useTheme } from "../context/ThemeContext.jsx";
 
 const stats = [
   { label: "Total scans", value: "0" },
@@ -16,6 +17,8 @@ const quickWins = [
 ];
 
 export default function Dashboard() {
+  const { isDark } = useTheme();
+
   return (
     <div className="space-y-8 py-8 sm:py-12">
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
@@ -24,11 +27,19 @@ export default function Dashboard() {
             Dashboard
           </span>
 
-          <h1 className="mt-4 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
+          <h1
+            className={`mt-4 text-4xl font-bold tracking-tight sm:text-5xl ${
+              isDark ? "text-white" : "text-slate-950"
+            }`}
+          >
             Welcome back to your scan workspace.
           </h1>
 
-          <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
+          <p
+            className={`mt-4 max-w-2xl text-base leading-7 ${
+              isDark ? "text-slate-300" : "text-slate-600"
+            }`}
+          >
             Your dashboard will eventually track scans, health trends, and
             ingredient history. For now, this is the place to jump back into a
             fresh scan.
@@ -51,7 +62,11 @@ export default function Dashboard() {
         </Card>
 
         <Card className="p-7 sm:p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">
+          <p
+            className={`text-sm font-semibold uppercase tracking-[0.24em] ${
+              isDark ? "text-slate-300" : "text-slate-500"
+            }`}
+          >
             Scan summary
           </p>
 
@@ -59,12 +74,24 @@ export default function Dashboard() {
             {stats.map((item) => (
               <div
                 key={item.label}
-                className="rounded-3xl border border-slate-200/80 bg-slate-50 p-4"
+                className={`rounded-3xl border p-4 ${
+                  isDark
+                    ? "border-white/10 bg-white/5"
+                    : "border-slate-200/80 bg-slate-50"
+                }`}
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+                <p
+                  className={`text-xs font-semibold uppercase tracking-[0.22em] ${
+                    isDark ? "text-slate-300" : "text-slate-500"
+                  }`}
+                >
                   {item.label}
                 </p>
-                <p className="mt-4 text-3xl font-bold text-slate-950">
+                <p
+                  className={`mt-4 text-3xl font-bold ${
+                    isDark ? "text-white" : "text-slate-950"
+                  }`}
+                >
                   {item.value}
                 </p>
               </div>

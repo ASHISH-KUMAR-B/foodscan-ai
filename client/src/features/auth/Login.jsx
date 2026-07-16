@@ -1,89 +1,78 @@
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
 
 import Button from "../../components/common/Button.jsx";
-import Card from "../../components/common/Card.jsx";
 import Input from "../../components/common/Input.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { loginSchema } from "./validation/loginSchema.js";
 import { loginUser } from "./services/authService.js";
 import { handleApiError } from "../../utils/errorHandler.js";
 import { ROUTES } from "../../constants/routes.js";
+import AuthShell from "./components/AuthShell.jsx";
 
 export default function Login() {
-	const navigate = useNavigate();
-	const { login } = useAuth();
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-	const {
-		register,
-		handleSubmit,
-		formState: { errors, isSubmitting },
-	} = useForm({
-		resolver: zodResolver(loginSchema),
-		defaultValues: {
-			email: "",
-			password: "",
-		},
-	});
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-	const onSubmit = async (values) => {
-		try {
-			const data = await loginUser(values);
-			if (data?.token) {
-				login(data.token);
-			}
-			toast.success(data?.message || "Login successful");
-			navigate("/dashboard");
-		} catch (error) {
-			handleApiError(error);
-		}
-	};
+  const onSubmit = async (values) => {
+    try {
+      const data = await loginUser(values);
 
-	return (
-		<div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-md items-center px-4 py-10">
-			<Card className="w-full p-8 sm:p-10">
-				<span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-emerald-900">
-					Welcome back
-				</span>
+      if (data?.token) {
+        login(data.token);
+      }
 
-				<h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">
-					Login
-				</h1>
-				<p className="mt-2 text-sm leading-6 text-slate-600">
-					Sign in to continue scanning food labels and reviewing insights.
-				</p>
+      toast.success(data?.message || "Login successful");
+      navigate(ROUTES.DASHBOARD);
+    } catch (error) {
+      handleApiError(error);
+    }
+  };
 
-				<form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
-					<Input
-						label="Email"
-						type="email"
-						placeholder="you@example.com"
-						error={errors.email?.message}
-						{...register("email")}
-					/>
+  return (
+    <AuthShell
+      formEyebrow="Secure sign in"
+      formTitle="Login"
+      formDescription="Use your account to scan food labels, review nutrition, and track the products you check most."
+      footerText="No account yet?"
+      footerLinkLabel="Register"
+      footerLinkTo={ROUTES.REGISTER}
+    >
+      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+        <Input
+          label="Email"
+          type="email"
+          placeholder="you@example.com"
+          error={errors.email?.message}
+          {...register("email")}
+        />
 
-					<Input
-						label="Password"
-						type="password"
-						placeholder="Password"
-						error={errors.password?.message}
-						{...register("password")}
-					/>
+        <Input
+          label="Password"
+          type="password"
+          placeholder="Password"
+          error={errors.password?.message}
+          {...register("password")}
+        />
 
-					<Button type="submit" className="w-full" disabled={isSubmitting}>
-						{isSubmitting ? "Logging in..." : "Login"}
-					</Button>
-				</form>
-
-				<p className="mt-5 text-sm text-slate-600">
-					Don&apos;t have an account?{" "}
-					<Link to={ROUTES.REGISTER} className="font-medium text-emerald-700 hover:underline">
-						Register
-					</Link>
-				</p>
-			</Card>
-		</div>
-	);
+        <Button type="submit" className="w-full" disabled={isSubmitting} size="lg">
+          {isSubmitting ? "Logging in..." : "Login"}
+        </Button>
+      </form>
+    </AuthShell>
+  );
 }

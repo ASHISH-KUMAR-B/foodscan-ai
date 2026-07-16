@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import EmptyState from "../../../components/common/EmptyState.jsx";
 import Card from "../../../components/common/Card.jsx";
 import ImageUploader from "../../../components/ImageUploader.jsx";
+import { useTheme } from "../../../context/ThemeContext.jsx";
 
 import ScanPreview from "../components/ScanPreview.jsx";
 import { useScanMutation } from "../hooks/useScanMutation.js";
@@ -29,38 +30,31 @@ function formatValue(value) {
   return value;
 }
 
-function getScoreTone(score) {
+function scoreTone(score) {
   if (score >= 80) {
-    return {
-      badge: "bg-emerald-100 text-emerald-900",
-      ring: "from-emerald-500 to-lime-400",
-      label: "Excellent",
-    };
+    return "emerald";
   }
 
   if (score >= 60) {
-    return {
-      badge: "bg-amber-100 text-amber-900",
-      ring: "from-amber-500 to-orange-400",
-      label: "Moderate",
-    };
+    return "amber";
   }
 
-  return {
-    badge: "bg-rose-100 text-rose-900",
-    ring: "from-rose-500 to-pink-400",
-    label: "Needs attention",
-  };
+  return "rose";
 }
 
-function SectionCard({ title, children, tone = "light" }) {
-  const isDark = tone === "dark";
+function SectionCard({ title, children, darkSurface = false }) {
+  const { isDark } = useTheme();
+  const useDarkSurface = darkSurface || isDark;
 
   return (
     <Card
-      className={`p-6 sm:p-7 ${isDark ? "border-slate-800 bg-slate-950 text-white" : ""}`}
+      className={`p-6 sm:p-7 ${
+        useDarkSurface
+          ? "border-white/10 bg-slate-950/90 text-white"
+          : "border-slate-200/80 bg-white/85 text-slate-900"
+      }`}
     >
-      <h3 className={`text-lg font-bold ${isDark ? "text-white" : "text-slate-950"}`}>
+      <h3 className={`text-lg font-bold ${useDarkSurface ? "text-white" : "text-slate-950"}`}>
         {title}
       </h3>
       <div className="mt-4">{children}</div>
@@ -69,12 +63,20 @@ function SectionCard({ title, children, tone = "light" }) {
 }
 
 function InfoPill({ label, value, tone = "neutral" }) {
-  const toneClass = {
-    neutral: "bg-slate-100 text-slate-700",
-    emerald: "bg-emerald-100 text-emerald-900",
-    amber: "bg-amber-100 text-amber-900",
-    rose: "bg-rose-100 text-rose-900",
-  }[tone];
+  const { isDark } = useTheme();
+  const toneClass = isDark
+    ? {
+        neutral: "border border-white/10 bg-white/5 text-slate-100",
+        emerald: "border border-emerald-400/20 bg-emerald-500/10 text-emerald-100",
+        amber: "border border-amber-400/20 bg-amber-500/10 text-amber-100",
+        rose: "border border-rose-400/20 bg-rose-500/10 text-rose-100",
+      }[tone]
+    : {
+        neutral: "bg-slate-100 text-slate-700",
+        emerald: "bg-emerald-100 text-emerald-900",
+        amber: "bg-amber-100 text-amber-900",
+        rose: "bg-rose-100 text-rose-900",
+      }[tone];
 
   return (
     <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${toneClass}`}>
@@ -87,12 +89,20 @@ function InfoPill({ label, value, tone = "neutral" }) {
 }
 
 function Badge({ children, tone = "neutral" }) {
-  const toneClass = {
-    neutral: "bg-slate-100 text-slate-700",
-    emerald: "bg-emerald-100 text-emerald-900",
-    amber: "bg-amber-100 text-amber-900",
-    rose: "bg-rose-100 text-rose-900",
-  }[tone];
+  const { isDark } = useTheme();
+  const toneClass = isDark
+    ? {
+        neutral: "border border-white/10 bg-white/5 text-slate-100",
+        emerald: "border border-emerald-400/20 bg-emerald-500/10 text-emerald-100",
+        amber: "border border-amber-400/20 bg-amber-500/10 text-amber-100",
+        rose: "border border-rose-400/20 bg-rose-500/10 text-rose-100",
+      }[tone]
+    : {
+        neutral: "bg-slate-100 text-slate-700",
+        emerald: "bg-emerald-100 text-emerald-900",
+        amber: "bg-amber-100 text-amber-900",
+        rose: "bg-rose-100 text-rose-900",
+      }[tone];
 
   return (
     <span
@@ -104,6 +114,7 @@ function Badge({ children, tone = "neutral" }) {
 }
 
 export default function Scan() {
+  const { isDark } = useTheme();
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState("");
   const [result, setResult] = useState(null);
@@ -154,7 +165,6 @@ export default function Scan() {
   };
 
   const score = result?.healthScore ?? 0;
-  const scoreTone = getScoreTone(score);
   const ingredients = result?.ingredients ?? [];
   const allergens = result?.allergens ?? [];
   const restrictedIngredients = result?.restrictedIngredients ?? [];
@@ -164,15 +174,23 @@ export default function Scan() {
     <div className="space-y-8 py-8 sm:py-12">
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <Card className="p-7 sm:p-8">
-          <span className="inline-flex rounded-full border border-emerald-200 bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-emerald-900">
+          <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-emerald-900">
             Scan workspace
           </span>
 
-          <h1 className="mt-4 max-w-2xl text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
+          <h1
+            className={`mt-4 max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl ${
+              isDark ? "text-white" : "text-slate-950"
+            }`}
+          >
             Camera-first OCR for packaged food labels.
           </h1>
 
-          <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
+          <p
+            className={`mt-4 max-w-2xl text-base leading-7 ${
+              isDark ? "text-slate-300" : "text-slate-600"
+            }`}
+          >
             Upload a package photo, let the backend clean the OCR text, and
             review ingredients, allergens, and nutrition in one structured view.
           </p>
@@ -185,31 +203,33 @@ export default function Scan() {
           </div>
         </Card>
 
-        <Card className="overflow-hidden bg-slate-950 p-0 text-white">
-          <div className="h-full bg-[radial-gradient(circle_at_top_right,rgba(163,230,53,0.2),transparent_32%),linear-gradient(135deg,#020617_0%,#0f172a_48%,#064e3b_100%)] p-7 sm:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-lime-200">
-              How it works
-            </p>
-
-            <div className="mt-5 space-y-3">
-              {[
-                "Capture or upload the ingredient panel.",
-                "Run OCR and cleanup in the backend.",
-                "Review parsed ingredients, nutrition, and warnings.",
-              ].map((step, index) => (
-                <div
-                  key={step}
-                  className="flex items-start gap-4 rounded-3xl border border-white/10 bg-white/5 px-4 py-4"
+        <SectionCard title="How it works">
+          <div className="space-y-3">
+            {[
+              "Capture or upload the ingredient panel.",
+              "Run OCR and cleanup in the backend.",
+              "Review parsed ingredients, nutrition, and warnings.",
+            ].map((step, index) => (
+              <div
+                key={step}
+                className={`flex items-start gap-4 rounded-3xl border px-4 py-4 ${
+                  isDark ? "border-white/10 bg-white/5" : "border-slate-200/80 bg-slate-50"
+                }`}
+              >
+                <span
+                  className={`grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-bold ${
+                    isDark ? "bg-white/10 text-lime-200" : "bg-emerald-100 text-emerald-900"
+                  }`}
                 >
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/10 text-sm font-bold text-lime-200">
-                    0{index + 1}
-                  </span>
-                  <p className="text-sm leading-6 text-white/85">{step}</p>
-                </div>
-              ))}
-            </div>
+                  0{index + 1}
+                </span>
+                <p className={`text-sm leading-6 ${isDark ? "text-slate-200" : "text-slate-700"}`}>
+                  {step}
+                </p>
+              </div>
+            ))}
           </div>
-        </Card>
+        </SectionCard>
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
@@ -234,7 +254,13 @@ export default function Scan() {
               <SectionCard title="Scan result">
                 <div className="grid gap-6 md:grid-cols-[auto_1fr] md:items-start">
                   <div
-                    className={`flex h-32 w-32 flex-col items-center justify-center rounded-[32px] bg-gradient-to-br ${scoreTone.ring} text-white shadow-[0_24px_60px_-24px_rgba(15,23,42,0.6)]`}
+                    className={`flex h-32 w-32 flex-col items-center justify-center rounded-[32px] bg-gradient-to-br ${
+                      scoreTone(score) === "emerald"
+                        ? "from-emerald-500 to-lime-400"
+                        : scoreTone(score) === "amber"
+                          ? "from-amber-500 to-orange-400"
+                          : "from-rose-500 to-pink-400"
+                    } text-white shadow-[0_24px_60px_-24px_rgba(15,23,42,0.6)]`}
                   >
                     <span className="text-4xl font-bold">{score}</span>
                     <span className="mt-1 text-xs uppercase tracking-[0.24em] text-white/80">
@@ -244,19 +270,35 @@ export default function Scan() {
 
                   <div className="space-y-4">
                     <div className="flex flex-wrap items-center gap-3">
-                      <Badge tone={score >= 80 ? "emerald" : score >= 60 ? "amber" : "rose"}>
-                        {scoreTone.label}
+                      <Badge
+                        tone={
+                          score >= 80 ? "emerald" : score >= 60 ? "amber" : "rose"
+                        }
+                      >
+                        {score >= 80 ? "Excellent" : score >= 60 ? "Moderate" : "Needs attention"}
                       </Badge>
-                      <span className="text-sm font-medium text-slate-500">
+                      <span
+                        className={`text-sm font-medium ${
+                          isDark ? "text-slate-300" : "text-slate-500"
+                        }`}
+                      >
                         Health score
                       </span>
                     </div>
 
                     <div>
-                      <h2 className="text-2xl font-bold text-slate-950">
+                      <h2
+                        className={`text-2xl font-bold ${
+                          isDark ? "text-white" : "text-slate-950"
+                        }`}
+                      >
                         {result.verdict || "Analysis complete"}
                       </h2>
-                      <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                      <p
+                        className={`mt-2 max-w-2xl text-sm leading-6 ${
+                          isDark ? "text-slate-300" : "text-slate-600"
+                        }`}
+                      >
                         {result.productName || "Unknown product"}{" "}
                         {result.brand ? `• ${result.brand}` : ""}
                       </p>
@@ -265,11 +307,15 @@ export default function Scan() {
                     <div className="flex flex-wrap gap-2">
                       <InfoPill
                         label="Ingredients"
-                        value={ingredients.length ? `${ingredients.length} detected` : "None"}
+                        value={
+                          ingredients.length ? `${ingredients.length} detected` : "None"
+                        }
                       />
                       <InfoPill
                         label="Allergens"
-                        value={allergens.length ? `${allergens.length} flagged` : "None detected"}
+                        value={
+                          allergens.length ? `${allergens.length} flagged` : "None detected"
+                        }
                         tone={allergens.length ? "amber" : "emerald"}
                       />
                       <InfoPill
@@ -309,7 +355,7 @@ export default function Scan() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm leading-6 text-slate-600">
+                    <p className={`text-sm leading-6 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
                       No ingredients were detected from the current image.
                     </p>
                   )}
@@ -318,7 +364,11 @@ export default function Scan() {
                 <SectionCard title="Alerts">
                   <div className="space-y-4">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+                      <p
+                        className={`text-xs font-semibold uppercase tracking-[0.24em] ${
+                          isDark ? "text-slate-300" : "text-slate-500"
+                        }`}
+                      >
                         Allergens
                       </p>
                       <div className="mt-2 flex flex-wrap gap-2">
@@ -329,7 +379,7 @@ export default function Scan() {
                             </Badge>
                           ))
                         ) : (
-                          <span className="text-sm text-slate-600">
+                          <span className={`text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>
                             No allergens detected.
                           </span>
                         )}
@@ -337,7 +387,11 @@ export default function Scan() {
                     </div>
 
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+                      <p
+                        className={`text-xs font-semibold uppercase tracking-[0.24em] ${
+                          isDark ? "text-slate-300" : "text-slate-500"
+                        }`}
+                      >
                         Restricted ingredients
                       </p>
                       <div className="mt-2 flex flex-wrap gap-2">
@@ -348,7 +402,7 @@ export default function Scan() {
                             </Badge>
                           ))
                         ) : (
-                          <span className="text-sm text-slate-600">
+                          <span className={`text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>
                             No restricted ingredients detected.
                           </span>
                         )}
@@ -364,7 +418,11 @@ export default function Scan() {
                     {tips.map((item) => (
                       <li
                         key={item}
-                        className="flex gap-3 rounded-2xl border border-slate-200/80 bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-700"
+                        className={`flex gap-3 rounded-2xl border px-4 py-3 text-sm leading-6 ${
+                          isDark
+                            ? "border-white/10 bg-white/5 text-slate-200"
+                            : "border-slate-200/80 bg-slate-50 text-slate-700"
+                        }`}
                       >
                         <span className="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-500" />
                         <span>{item}</span>
@@ -372,7 +430,7 @@ export default function Scan() {
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-sm leading-6 text-slate-600">
+                  <p className={`text-sm leading-6 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
                     No tips were generated for this scan yet.
                   </p>
                 )}
