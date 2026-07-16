@@ -214,26 +214,17 @@ export async function analyzeImage(ocrText) {
 
 
 
-  } catch(error) {
+  } catch (error) {
+  console.error(
+    "Cloudflare AI Error:",
+    error.response?.data || error.message
+  );
 
-
-    console.error(
-
-      "Cloudflare AI Error:",
-
-      error.response?.data ||
-      error.message
-
-    );
-
-
-
-    throw new Error(
-      "Food analysis failed."
-    );
-
-
-  }
+  throw new Error(
+    "Food analysis failed.",
+    { cause: error }
+  );
+}
 
 
 }
