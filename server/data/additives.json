@@ -1,0 +1,24 @@
+{
+  "INS 330": {
+    "name": "Citric Acid",
+    "risk": "Safe",
+    "score": 0
+  },
+  "INS 296": {
+    "name": "Malic Acid",
+    "risk": "Safe",
+    "score": 0
+  },
+  "Sugar": {
+    "risk": "Moderate",
+    "score": -5
+  },
+  "Maltodextrin": {
+    "risk": "Moderate",
+    "score": -8
+  },
+  "Hydrolyzed Vegetable Protein": {
+    "risk": "Moderate",
+    "score": -4
+  }
+}

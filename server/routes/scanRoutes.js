@@ -6,6 +6,10 @@ const router = express.Router();
 
 router.post(
   "/upload",
+  (req, res, next) => {
+    console.log("➡️ /api/scan/upload called");
+    next();
+  },
   upload.single("image"),
   uploadImage
 );

@@ -29,3 +29,7 @@ coverage/
 
 # Misc
 *.local
+
+config/google-vision-key.json
+
+uploads/

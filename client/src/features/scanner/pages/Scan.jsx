@@ -1,86 +1,188 @@
 import { useState } from "react";
-import api from "../../../api/axios";
-import { ENDPOINTS } from "../../../api/endpoints";
+
+import Card from "../../../components/common/Card";
 import ImageUploader from "../../../components/ImageUploader";
-import Button from "../../../components/common/Button.jsx";
-import Card from "../../../components/common/Card.jsx";
-import { handleApiError } from "../../../utils/errorHandler.js";
+
+import ScanPreview from "../components/ScanPreview";
+
+import { useScanMutation } from "../hooks/useScanMutation";
 
 export default function Scan() {
 	const [image, setImage] = useState(null);
 	const [preview, setPreview] = useState("");
-	const [loading, setLoading] = useState(false);
-	const [message, setMessage] = useState("");
+	const [result, setResult] = useState(null);
+
+	const { mutate, isPending } = useScanMutation();
 
 	const handleImageSelect = (file) => {
+		if (!file) return;
+
 		setImage(file);
 		setPreview(URL.createObjectURL(file));
-		setMessage("");
+		setResult(null);
 	};
 
-	const uploadImage = async () => {
-		if (!image) {
-			setMessage("Please select an image.");
-			return;
-		}
+	const handleAnalyze = () => {
+		if (!image) return;
 
 		const formData = new FormData();
 		formData.append("image", image);
 
-		try {
-			setLoading(true);
+		mutate(formData, {
+			onSuccess: (response) => {
+				console.log("AI Response:", response);
 
-			const response = await api.post(ENDPOINTS.IMAGE_UPLOAD, formData);
-
-			setMessage(response.data?.message || "Image uploaded successfully.");
-		} catch (error) {
-			handleApiError(error);
-			setMessage(error.response?.data?.message || "Upload failed.");
-		} finally {
-			setLoading(false);
-		}
+				setResult(response?.data?.data || null);
+			},
+		});
 	};
 
-	const removeImage = () => {
+	const handleRemove = () => {
+		if (preview) {
+			URL.revokeObjectURL(preview);
+		}
+
 		setImage(null);
 		setPreview("");
-		setMessage("");
+		setResult(null);
 	};
 
 	return (
-		<div className="mx-auto max-w-xl p-6">
+		<div className="mx-auto max-w-3xl p-6">
 			<Card className="p-6">
-				<h1 className="mb-6 text-3xl font-bold">Scan Product</h1>
+				<h1 className="mb-2 text-3xl font-bold">
+					Scan Food Product
+				</h1>
 
-				<ImageUploader onSelect={handleImageSelect} />
+				<p className="mb-6 text-slate-600">
+					Upload or capture a food package image to analyze ingredients and health information.
+				</p>
 
-				{preview && (
-					<div className="mt-6 space-y-4">
-						<img
-							src={preview}
-							alt="Preview"
-							className="max-h-96 w-full rounded-xl object-cover shadow"
-						/>
+				<ImageUploader
+					onSelect={handleImageSelect}
+					accept="image/*"
+					capture="environment"
+				/>
 
-						<div className="flex gap-3">
-							<Button type="button" onClick={uploadImage} disabled={loading}>
-								{loading ? "Uploading..." : "Upload"}
-							</Button>
+				<ScanPreview
+					preview={preview}
+					loading={isPending}
+					onAnalyze={handleAnalyze}
+					onRemove={handleRemove}
+				/>
 
-							<Button type="button" className="bg-red-500 hover:bg-red-600" onClick={removeImage}>
-								Remove
-							</Button>
+				{result && (
+					<div className="mt-8 space-y-5 rounded-xl bg-slate-50 p-6">
+
+						<h2 className="text-2xl font-bold">
+							🤖 Food Analysis
+						</h2>
+
+						<div>
+							<p>
+								<strong>📦 Product:</strong>{" "}
+								{result.productName || "Unknown"}
+							</p>
+
+							<p>
+								<strong>🏢 Brand:</strong>{" "}
+								{result.brand || "Unknown"}
+							</p>
+
+							<p>
+								<strong>❤️ Health Score:</strong>{" "}
+								{result.healthScore || 0}/100
+							</p>
 						</div>
+
+
+						<div>
+							<h3 className="font-semibold text-lg">
+								🥣 Ingredients
+							</h3>
+
+							<ul className="list-disc pl-6">
+								{result.ingredients?.length ? (
+									result.ingredients.map((item, index) => (
+										<li key={index}>
+											{item}
+										</li>
+									))
+								) : (
+									<li>No ingredients detected</li>
+								)}
+							</ul>
+						</div>
+
+
+						<div>
+							<h3 className="font-semibold text-lg">
+								⚠ Allergens
+							</h3>
+
+							<ul className="list-disc pl-6">
+								{result.allergens?.length ? (
+									result.allergens.map((item, index) => (
+										<li key={index}>
+											{item}
+										</li>
+									))
+								) : (
+									<li>No allergens detected</li>
+								)}
+							</ul>
+						</div>
+
+
+						<div>
+							<h3 className="font-semibold text-lg">
+								💡 Health Tips
+							</h3>
+
+							<ul className="list-disc pl-6">
+								{result.tips?.length ? (
+									result.tips.map((item, index) => (
+										<li key={index}>
+											{item}
+										</li>
+									))
+								) : (
+									<li>No tips available</li>
+								)}
+							</ul>
+						</div>
+
+
+						<div>
+							<h3 className="font-semibold text-lg">
+								🍎 Nutrition
+							</h3>
+
+							<p>
+								Calories: {result.nutrition?.calories || "N/A"}
+							</p>
+
+							<p>
+								Protein: {result.nutrition?.protein || "N/A"}
+							</p>
+
+							<p>
+								Fat: {result.nutrition?.fat || "N/A"}
+							</p>
+
+							<p>
+								Carbohydrates: {result.nutrition?.carbohydrates || "N/A"}
+							</p>
+
+							<p>
+								Sugar: {result.nutrition?.sugar || "N/A"}
+							</p>
+						</div>
+
 					</div>
 				)}
 
-				{message && (
-					<p className="mt-5 rounded-xl bg-slate-100 px-4 py-3 text-sm text-slate-700">
-						{message}
-					</p>
-				)}
 			</Card>
 		</div>
 	);
 }
-

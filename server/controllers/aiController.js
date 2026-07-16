@@ -4,7 +4,10 @@ export const analyzeController = async (req, res) => {
   try {
     const result = await scanFoodProduct(req.file);
 
-    return res.status(200).json(result);
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
   } catch (error) {
     console.error("AI Controller Error:", error);
 
