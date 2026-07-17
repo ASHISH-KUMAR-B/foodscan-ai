@@ -45,10 +45,10 @@ export async function runOcrPipeline(imagePath, { debug = false } = {}) {
     suffix: "opencv-up",
   });
 
-  const mergedNutrition = mergeNutrition(
-    standardPass.nutrition,
-    upscaledPass.nutrition
-  );
+const mergedNutrition = mergeNutrition(
+  standardPass.nutrition,
+  upscaledPass.nutrition
+);
 
   if (debug) {
     logPass("PASS 1 (Standard)", standardPass);

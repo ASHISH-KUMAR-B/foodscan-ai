@@ -28,14 +28,29 @@ export async function preprocessImageOpenCV(imagePath, { upscale = false, suffix
   const gray = new cv.Mat();
   cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
 
+    // Detect inverted-color labels (light text on dark background) and flip them
+  const meanVal = cv.mean(gray)[0];
+  if (meanVal < 128) {
+    cv.bitwise_not(gray, gray);
+  }
+
   // Gaussian blur
   const blurred = new cv.Mat();
   const ksize = new cv.Size(3, 3);
   cv.GaussianBlur(gray, blurred, ksize, 0, 0, cv.BORDER_DEFAULT);
 
-  // Otsu's global binarization
-  const thresholded = new cv.Mat();
-  cv.threshold(blurred, thresholded, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU);
+
+  // Adaptive thresholding - handles uneven lighting better than Otsu global
+const thresholded = new cv.Mat();
+cv.adaptiveThreshold(
+  blurred,
+  thresholded,
+  255,
+  cv.ADAPTIVE_THRESH_GAUSSIAN_C,
+  cv.THRESH_BINARY,
+  15,
+  10
+);
 
   // Save with 300 DPI so Tesseract uses the correct resolution hint
   const outputPath = path.join(
@@ -54,6 +69,7 @@ export async function preprocessImageOpenCV(imagePath, { upscale = false, suffix
   .withMetadata({ density: 300 })
   .toFile(outputPath);
 
+  
   // Cleanup
   src.delete();
   gray.delete();
