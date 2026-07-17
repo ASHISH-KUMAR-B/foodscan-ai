@@ -149,7 +149,7 @@ export default function Scan() {
 
     mutate(formData, {
       onSuccess: (response) => {
-        setResult(response?.data?.data || null);
+        setResult(response?.data || null);
       },
     });
   };
@@ -304,6 +304,27 @@ export default function Scan() {
                       </p>
                     </div>
 
+                    {result.safetyStatus && (
+                      <div
+                        className={`rounded-2xl border px-4 py-3 text-sm font-medium ${
+                          result.safetyStatus.includes("Unsafe")
+                            ? "border-rose-400/30 bg-rose-500/10 text-rose-700 dark:text-rose-100"
+                            : result.safetyStatus.includes("Caution")
+                              ? "border-amber-400/30 bg-amber-500/10 text-amber-700 dark:text-amber-100"
+                              : "border-emerald-400/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-100"
+                        }`}
+                      >
+                        <p className="font-semibold">{result.safetyStatus}</p>
+                        {result.safetyReasons?.length > 0 && (
+                          <ul className="mt-1 list-disc pl-5 text-xs opacity-90">
+                            {result.safetyReasons.map((reason) => (
+                              <li key={reason}>{reason}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+
                     <div className="flex flex-wrap gap-2">
                       <InfoPill
                         label="Ingredients"
@@ -346,12 +367,26 @@ export default function Scan() {
 
               <div className="grid gap-6 lg:grid-cols-2">
                 <SectionCard title="Ingredients">
-                  {ingredients.length ? (
-                    <div className="flex flex-wrap gap-2">
-                      {ingredients.map((item) => (
-                        <Badge key={item} tone="neutral">
-                          {item}
-                        </Badge>
+                  {result.ingredientAnalysis?.length ? (
+                    <div className="space-y-2">
+                      {result.ingredientAnalysis.map((item) => (
+                        <div
+                          key={item.name}
+                          className={`rounded-xl border px-3 py-2 text-sm ${
+                            item.risk === "High"
+                              ? "border-rose-400/30 bg-rose-500/5"
+                              : item.risk === "Medium" || item.risk === "Mixed"
+                                ? "border-amber-400/30 bg-amber-500/5"
+                                : isDark
+                                  ? "border-white/10 bg-white/5"
+                                  : "border-slate-200/60 bg-slate-50"
+                          } ${isDark ? "text-slate-100" : "text-slate-800"}`}
+                        >
+                          <p className="font-semibold">{item.name}</p>
+                          {item.description && (
+                            <p className="mt-0.5 text-xs opacity-70">{item.description}</p>
+                          )}
+                        </div>
                       ))}
                     </div>
                   ) : (
