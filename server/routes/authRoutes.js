@@ -1,8 +1,9 @@
 import express from "express";
-
+import { protect } from "../middleware/authMiddleware.js";
 import {
 register,
-login
+login,
+getProfile
 }
 from "../controllers/authController.js";
 
@@ -23,6 +24,6 @@ router.post(
 login
 );
 
-
+router.get("/profile", protect, getProfile);
 
 export default router;

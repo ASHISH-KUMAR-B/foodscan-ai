@@ -15,3 +15,8 @@ export const deleteHistoryItem = async (id) => {
   const { data } = await api.delete(`${ENDPOINTS.HISTORY}/${id}`);
   return data;
 };
+
+export const getScanStats = async () => {
+  const { data } = await api.get(`${ENDPOINTS.HISTORY}/stats`);
+  return data;
+};

@@ -4,15 +4,19 @@ import { useTranslation } from "react-i18next";
 import Card from "../components/common/Card.jsx";
 import { ROUTES } from "../constants/routes.js";
 import { useTheme } from "../context/ThemeContext.jsx";
+import { useScanStatsQuery } from "../features/history/hooks/useScanStatsQuery.js";
 
 export default function Dashboard() {
   const { isDark } = useTheme();
   const { t } = useTranslation();
+  const { data: statsData } = useScanStatsQuery();
+
+  const scanStats = statsData?.data;
 
   const stats = [
-    { label: t("dashboard.stats.totalScans"), value: "0" },
-    { label: t("dashboard.stats.healthyPicks"), value: "0" },
-    { label: t("dashboard.stats.warnings"), value: "0" },
+    { label: t("dashboard.stats.totalScans"), value: scanStats?.totalScans ?? "0" },
+    { label: t("dashboard.stats.healthyPicks"), value: scanStats?.healthyPicks ?? "0" },
+    { label: t("dashboard.stats.warnings"), value: scanStats?.warnings ?? "0" },
   ];
 
   const quickWins = t("dashboard.quickWins.items", { returnObjects: true });

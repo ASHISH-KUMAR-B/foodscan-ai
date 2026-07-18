@@ -274,7 +274,33 @@
     "title": "Upload a clear ingredient label",
     "description": "Capture the nutrition panel or ingredient list in good light. The cleaner the image, the better the OCR and ingredient parsing.",
     "cta": "Capture / Upload Image"
+  },
+  "profile": {
+    "eyebrow": "Profile",
+    "title": "Your FoodScan AI account.",
+    "description": "This space holds your account summary, scan history shortcuts, and security status.",
+    "startScan": "Start a scan",
+    "openSettings": "Open settings",
+    "accountStatus": "Account status",
+    "signedIn": "Signed in on this device",
+    "sessionUnavailable": "Session unavailable",
+    "stats": {
+      "scansSaved": "Scans saved",
+      "healthyPicks": "Healthy picks",
+      "warnings": "Warnings"
+    },
+    "detailsTitle": "Profile details",
+    "name": "Name",
+    "email": "Email",
+    "memberSince": "Member since",
+    "notAvailable": "Not available",
+    "securityTitle": "Security notes",
+    "securityNotes": [
+      "Your session token is stored locally on this device.",
+      "Logout clears the active session from this browser.",
+      "Future updates can connect account details to the backend profile API."
+    ],
+    "manageAccountSoon": "Manage account soon"
   }
-
 
 }
