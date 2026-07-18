@@ -1,6 +1,6 @@
 import { useTheme } from "../../context/ThemeContext.jsx";
 
-export default function Card({ children, className = "" }) {
+export default function Card({ children, className = "", ...rest }) {
   const { isDark } = useTheme();
 
   return (
@@ -10,6 +10,7 @@ export default function Card({ children, className = "" }) {
           ? "border-white/10 bg-slate-900/80 text-slate-100"
           : "border-white/70 bg-white/85 text-slate-900"
       } ${className}`}
+      {...rest}
     >
       {children}
     </div>
