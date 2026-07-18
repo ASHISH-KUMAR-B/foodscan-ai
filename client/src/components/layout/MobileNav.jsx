@@ -1,26 +1,29 @@
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { ROUTES } from "../../constants/routes.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useTheme } from "../../context/ThemeContext.jsx";
 
-const authenticatedItems = [
-  { to: ROUTES.DASHBOARD, label: "Dashboard" },
-  { to: ROUTES.SCAN, label: "Scan" },
-  { to: ROUTES.HISTORY, label: "History" },
-  { to: ROUTES.PROFILE, label: "Profile" },
-];
-
-const publicItems = [
-  { to: ROUTES.HOME, label: "Home" },
-  { to: ROUTES.SCAN, label: "Scan" },
-  { to: ROUTES.LOGIN, label: "Login" },
-  { to: ROUTES.REGISTER, label: "Join" },
-];
-
 export default function MobileNav() {
   const { isAuthenticated } = useAuth();
   const { isDark } = useTheme();
+  const { t } = useTranslation();
+
+  const authenticatedItems = [
+    { to: ROUTES.DASHBOARD, label: t("nav.dashboard") },
+    { to: ROUTES.SCAN, label: t("nav.scan") },
+    { to: ROUTES.HISTORY, label: t("nav.history") },
+    { to: ROUTES.PROFILE, label: t("mobileNav.profile") },
+  ];
+
+  const publicItems = [
+    { to: ROUTES.HOME, label: t("nav.home") },
+    { to: ROUTES.SCAN, label: t("nav.scan") },
+    { to: ROUTES.LOGIN, label: t("nav.login") },
+    { to: ROUTES.REGISTER, label: t("mobileNav.join") },
+  ];
+
   const items = isAuthenticated ? authenticatedItems : publicItems;
 
   return (

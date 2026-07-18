@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 import Button from "./common/Button.jsx";
 import Card from "./common/Card.jsx";
@@ -9,6 +10,7 @@ export default function ImageUploader({
   capture = "environment",
 }) {
   const inputRef = useRef(null);
+  const { t } = useTranslation();
 
   const handleClick = () => {
     inputRef.current?.click();
@@ -39,21 +41,20 @@ export default function ImageUploader({
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="max-w-xl">
           <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-800">
-            Step 1
+            {t("imageUploader.step1")}
           </span>
 
           <h2 className="mt-3 text-2xl font-bold text-slate-900">
-            Upload a clear ingredient label
+            {t("imageUploader.title")}
           </h2>
 
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            Capture the nutrition panel or ingredient list in good light.
-            The cleaner the image, the better the OCR and ingredient parsing.
+            {t("imageUploader.description")}
           </p>
         </div>
 
         <Button type="button" onClick={handleClick} size="lg">
-          Capture / Upload Image
+          {t("imageUploader.cta")}
         </Button>
       </div>
     </Card>

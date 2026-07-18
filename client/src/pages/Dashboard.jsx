@@ -1,30 +1,28 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import Card from "../components/common/Card.jsx";
 import { ROUTES } from "../constants/routes.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 
-const stats = [
-  { label: "Total scans", value: "0" },
-  { label: "Healthy picks", value: "0" },
-  { label: "Warnings", value: "0" },
-];
-
-const quickWins = [
-  "Review your latest scans at a glance.",
-  "Spot repeat ingredients and common allergens.",
-  "Jump back into the scan flow in one tap.",
-];
-
 export default function Dashboard() {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
+
+  const stats = [
+    { label: t("dashboard.stats.totalScans"), value: "0" },
+    { label: t("dashboard.stats.healthyPicks"), value: "0" },
+    { label: t("dashboard.stats.warnings"), value: "0" },
+  ];
+
+  const quickWins = t("dashboard.quickWins.items", { returnObjects: true });
 
   return (
     <div className="space-y-8 py-8 sm:py-12">
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <Card className="p-7 sm:p-8">
           <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-emerald-900">
-            Dashboard
+            {t("dashboard.eyebrow")}
           </span>
 
           <h1
@@ -32,7 +30,7 @@ export default function Dashboard() {
               isDark ? "text-white" : "text-slate-950"
             }`}
           >
-            Welcome back to your scan workspace.
+            {t("dashboard.title")}
           </h1>
 
           <p
@@ -40,9 +38,7 @@ export default function Dashboard() {
               isDark ? "text-slate-300" : "text-slate-600"
             }`}
           >
-            Your dashboard will eventually track scans, health trends, and
-            ingredient history. For now, this is the place to jump back into a
-            fresh scan.
+            {t("dashboard.description")}
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
@@ -50,13 +46,13 @@ export default function Dashboard() {
               to={ROUTES.SCAN}
               className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-500 px-6 py-3.5 text-base font-medium text-white shadow-[0_18px_40px_-20px_rgba(22,163,74,0.85)] transition hover:-translate-y-0.5"
             >
-              Scan new product
+              {t("dashboard.scanNewProduct")}
             </Link>
             <Link
               to={ROUTES.HISTORY}
               className="inline-flex items-center justify-center rounded-full border border-slate-200/80 bg-white/90 px-6 py-3.5 text-base font-medium text-slate-800 shadow-sm transition hover:border-slate-300 hover:bg-white"
             >
-              View history
+              {t("dashboard.viewHistory")}
             </Link>
           </div>
         </Card>
@@ -67,7 +63,7 @@ export default function Dashboard() {
               isDark ? "text-slate-300" : "text-slate-500"
             }`}
           >
-            Scan summary
+            {t("dashboard.scanSummary")}
           </p>
 
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
@@ -100,7 +96,7 @@ export default function Dashboard() {
 
           <div className="mt-5 rounded-3xl bg-gradient-to-br from-slate-950 via-emerald-950 to-emerald-700 p-5 text-white">
             <p className="text-sm uppercase tracking-[0.24em] text-emerald-200">
-              Quick wins
+              {t("dashboard.quickWins.label")}
             </p>
             <ul className="mt-4 space-y-3 text-sm leading-6 text-white/90">
               {quickWins.map((item) => (

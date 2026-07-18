@@ -1,7 +1,9 @@
+import { useTranslation } from "react-i18next";
 import { useTheme } from "../../context/ThemeContext.jsx";
 
 export default function Footer() {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <footer
@@ -11,7 +13,7 @@ export default function Footer() {
           : "border-white/70 bg-white/70 text-slate-500"
       }`}
     >
-      FoodScan AI • Scan smarter, eat better
+      {t("brand.footer")}
     </footer>
   );
 }

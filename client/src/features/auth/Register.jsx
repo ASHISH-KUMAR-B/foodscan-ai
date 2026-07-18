@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 
 import Button from "../../components/common/Button.jsx";
@@ -13,6 +14,7 @@ import AuthShell from "./components/AuthShell.jsx";
 
 export default function Register() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const {
     register,
@@ -30,7 +32,7 @@ export default function Register() {
   const onSubmit = async (values) => {
     try {
       const data = await registerUser(values);
-      toast.success(data?.message || "Registration successful");
+      toast.success(data?.message || t("auth.register.successToast"));
       navigate(ROUTES.LOGIN);
     } catch (error) {
       handleApiError(error);
@@ -39,40 +41,40 @@ export default function Register() {
 
   return (
     <AuthShell
-      formEyebrow="Create account"
-      formTitle="Register"
-      formDescription="Make an account to save scans, compare products later, and keep your food insights in one place."
-      footerText="Already have an account?"
-      footerLinkLabel="Sign in"
+      formEyebrow={t("auth.register.eyebrow")}
+      formTitle={t("auth.register.title")}
+      formDescription={t("auth.register.description")}
+      footerText={t("auth.register.footerText")}
+      footerLinkLabel={t("auth.register.footerLink")}
       footerLinkTo={ROUTES.LOGIN}
     >
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         <Input
-          label="Name"
+          label={t("auth.register.nameLabel")}
           type="text"
-          placeholder="Your name"
+          placeholder={t("auth.register.namePlaceholder")}
           error={errors.name?.message}
           {...register("name")}
         />
 
         <Input
-          label="Email"
+          label={t("auth.register.emailLabel")}
           type="email"
-          placeholder="you@example.com"
+          placeholder={t("auth.register.emailPlaceholder")}
           error={errors.email?.message}
           {...register("email")}
         />
 
         <Input
-          label="Password"
+          label={t("auth.register.passwordLabel")}
           type="password"
-          placeholder="Password"
+          placeholder={t("auth.register.passwordPlaceholder")}
           error={errors.password?.message}
           {...register("password")}
         />
 
         <Button type="submit" className="w-full" disabled={isSubmitting} size="lg">
-          {isSubmitting ? "Creating account..." : "Register"}
+          {isSubmitting ? t("auth.register.submitting") : t("auth.register.submit")}
         </Button>
       </form>
     </AuthShell>

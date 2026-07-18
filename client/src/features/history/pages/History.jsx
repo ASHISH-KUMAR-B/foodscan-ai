@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useHistoryDetailQuery } from "../hooks/useHistoryDetailQuery.js";
 import { useDeleteHistoryMutation } from "../hooks/useDeleteHistoryMutation.js";
@@ -10,12 +10,6 @@ import { ROUTES } from "../../../constants/routes.js";
 import { useTheme } from "../../../context/ThemeContext.jsx";
 import { useHistoryQuery } from "../hooks/useHistoryQuery.js";
 
-const historyTips = [
-  "Scanned products will appear here in chronological order.",
-  "You will be able to compare repeated products over time.",
-  "The history page is ready for API-backed scan records later.",
-];
-
 function scoreTone(score) {
   if (score >= 80) return "emerald";
   if (score >= 60) return "amber";
@@ -24,7 +18,10 @@ function scoreTone(score) {
 
 export default function History() {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   const { data, isLoading, isError } = useHistoryQuery();
+
+  const historyTips = t("historyPage.tips", { returnObjects: true });
 
   const scans = data?.data ?? [];
 
@@ -35,7 +32,7 @@ export default function History() {
   const selectedScan = detailData?.data;
 
   const handleDelete = (id) => {
-    if (window.confirm("Delete this scan? This cannot be undone.")) {
+    if (window.confirm(t("historyPage.deleteConfirm"))) {
       deleteScan(id, {
         onSuccess: () => {
           if (selectedId === id) setSelectedId(null);
@@ -49,7 +46,7 @@ export default function History() {
       <section className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
         <Card className="p-7 sm:p-8">
           <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-emerald-900">
-            History
+            {t("historyPage.eyebrow")}
           </span>
 
           <h1
@@ -57,7 +54,7 @@ export default function History() {
               isDark ? "text-white" : "text-slate-950"
             }`}
           >
-            Keep track of every food scan.
+            {t("historyPage.title")}
           </h1>
 
           <p
@@ -65,8 +62,7 @@ export default function History() {
               isDark ? "text-slate-300" : "text-slate-600"
             }`}
           >
-            Every product you scan is saved here automatically, with its
-            health score and safety status for quick reference later.
+            {t("historyPage.description")}
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
@@ -74,17 +70,17 @@ export default function History() {
               to={ROUTES.SCAN}
               className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-500 px-6 py-3.5 text-base font-medium text-white shadow-[0_18px_40px_-20px_rgba(22,163,74,0.85)] transition hover:-translate-y-0.5"
             >
-              Scan new product
+              {t("historyPage.scanNewProduct")}
             </Link>
             <Button variant="secondary" size="lg" disabled>
-              Export history soon
+              {t("historyPage.exportSoon")}
             </Button>
           </div>
         </Card>
 
         <Card className="p-7 sm:p-8">
           <h2 className={`text-xl font-bold ${isDark ? "text-white" : "text-slate-950"}`}>
-            What history shows
+            {t("historyPage.whatShows")}
           </h2>
           <ul className={`mt-5 space-y-3 text-sm leading-6 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
             {historyTips.map((tip) => (
@@ -105,7 +101,7 @@ export default function History() {
       {isLoading && (
         <Card className="p-6 sm:p-8">
           <p className={`text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>
-            Loading your scan history...
+            {t("historyPage.loading")}
           </p>
         </Card>
       )}
@@ -113,7 +109,7 @@ export default function History() {
       {isError && (
         <Card className="p-6 sm:p-8">
           <p className="text-sm text-rose-500">
-            Could not load your history. Please try again.
+            {t("historyPage.error")}
           </p>
         </Card>
       )}
@@ -121,8 +117,8 @@ export default function History() {
       {!isLoading && !isError && scans.length === 0 && (
         <Card className="p-6 sm:p-8">
           <EmptyState
-            title="No scans yet"
-            description="Once you start scanning products, your results will appear here with the product name, health score, and quick access to the full analysis."
+            title={t("emptyState.noScansTitle")}
+            description={t("emptyState.noScansDescription")}
           />
         </Card>
       )}
@@ -153,7 +149,7 @@ export default function History() {
               </div>
 
               <p className={`mt-3 font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>
-                {scan.verdict || "Scan result"}
+                {scan.verdict || t("scan.result.title")}
               </p>
 
               {scan.safetyStatus && (
@@ -164,7 +160,7 @@ export default function History() {
 
               {scan.allergens?.length > 0 && (
                 <p className="mt-2 text-xs text-amber-600">
-                  Allergens: {scan.allergens.join(", ")}
+                  {t("historyPage.allergensPrefix")} {scan.allergens.join(", ")}
                 </p>
               )}
 
@@ -177,7 +173,7 @@ export default function History() {
                 disabled={isDeleting}
                 className="mt-3 text-xs font-medium text-rose-500 hover:text-rose-400"
               >
-                Delete
+                {t("historyPage.delete")}
               </button>
             </Card>
           ))}
@@ -187,20 +183,20 @@ export default function History() {
         <Card className="p-6 sm:p-8">
           <div className="flex items-center justify-between">
             <h2 className={`text-xl font-bold ${isDark ? "text-white" : "text-slate-950"}`}>
-              Scan detail
+              {t("historyPage.detailTitle")}
             </h2>
             <button
               type="button"
               onClick={() => setSelectedId(null)}
               className={`text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}
             >
-              Close
+              {t("historyPage.close")}
             </button>
           </div>
 
           {isDetailLoading && (
             <p className={`mt-4 text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>
-              Loading scan...
+              {t("historyPage.loadingScan")}
             </p>
           )}
 
@@ -229,7 +225,7 @@ export default function History() {
 
               <div>
                 <p className={`text-xs font-semibold uppercase tracking-[0.2em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-                  Ingredients
+                  {t("historyPage.ingredientsTitle")}
                 </p>
                 <div className="mt-2 space-y-2">
                   {selectedScan.ingredientAnalysis?.map((item) => (

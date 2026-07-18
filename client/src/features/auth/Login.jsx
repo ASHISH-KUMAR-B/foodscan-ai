@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 
 import Button from "../../components/common/Button.jsx";
@@ -15,6 +16,7 @@ import AuthShell from "./components/AuthShell.jsx";
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { t } = useTranslation();
 
   const {
     register,
@@ -36,7 +38,7 @@ export default function Login() {
         login(data.token);
       }
 
-      toast.success(data?.message || "Login successful");
+      toast.success(data?.message || t("auth.login.successToast"));
       navigate(ROUTES.DASHBOARD);
     } catch (error) {
       handleApiError(error);
@@ -45,32 +47,32 @@ export default function Login() {
 
   return (
     <AuthShell
-      formEyebrow="Secure sign in"
-      formTitle="Login"
-      formDescription="Use your account to scan food labels, review nutrition, and track the products you check most."
-      footerText="No account yet?"
-      footerLinkLabel="Register"
+      formEyebrow={t("auth.login.eyebrow")}
+      formTitle={t("auth.login.title")}
+      formDescription={t("auth.login.description")}
+      footerText={t("auth.login.footerText")}
+      footerLinkLabel={t("auth.login.footerLink")}
       footerLinkTo={ROUTES.REGISTER}
     >
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         <Input
-          label="Email"
+          label={t("auth.login.emailLabel")}
           type="email"
-          placeholder="you@example.com"
+          placeholder={t("auth.login.emailPlaceholder")}
           error={errors.email?.message}
           {...register("email")}
         />
 
         <Input
-          label="Password"
+          label={t("auth.login.passwordLabel")}
           type="password"
-          placeholder="Password"
+          placeholder={t("auth.login.passwordPlaceholder")}
           error={errors.password?.message}
           {...register("password")}
         />
 
         <Button type="submit" className="w-full" disabled={isSubmitting} size="lg">
-          {isSubmitting ? "Logging in..." : "Login"}
+          {isSubmitting ? t("auth.login.submitting") : t("auth.login.submit")}
         </Button>
       </form>
     </AuthShell>

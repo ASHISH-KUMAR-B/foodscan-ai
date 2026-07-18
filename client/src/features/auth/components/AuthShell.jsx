@@ -1,44 +1,9 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import Card from "../../../components/common/Card.jsx";
 import { ROUTES } from "../../../constants/routes.js";
 import { useTheme } from "../../../context/ThemeContext.jsx";
-
-const featureCards = [
-  {
-    title: "OCR cleanup",
-    description:
-      "Turn a package photo into readable text that your app can analyze.",
-  },
-  {
-    title: "Ingredient parser",
-    description:
-      "Detect ingredients, allergens, and restricted items in plain language.",
-  },
-  {
-    title: "Health score",
-    description:
-      "See a simple score that helps you understand the product at a glance.",
-  },
-];
-
-const steps = [
-  "Capture the label or nutrition panel.",
-  "Run OCR and text cleanup in the backend.",
-  "Review ingredients, warnings, and nutrition together.",
-];
-
-const trustPills = [
-  "Mobile-friendly scanning",
-  "Fast analysis flow",
-  "Built for packaged foods",
-];
-
-const navLinks = [
-  { href: "#how-it-works", label: "How it works" },
-  { href: "#features", label: "Features" },
-  { href: "#security", label: "Security" },
-];
 
 const linkButton =
   "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium transition";
@@ -53,6 +18,17 @@ export default function AuthShell({
   children,
 }) {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
+
+  const featureCards = t("auth.featureCards", { returnObjects: true });
+  const steps = t("auth.steps", { returnObjects: true });
+  const trustPills = t("auth.trustPills", { returnObjects: true });
+
+  const navLinks = [
+    { href: "#how-it-works", label: t("auth.navLinks.howItWorks") },
+    { href: "#features", label: t("auth.navLinks.features") },
+    { href: "#security", label: t("auth.navLinks.security") },
+  ];
 
   return (
     <div
@@ -85,15 +61,15 @@ export default function AuthShell({
           </span>
           <span className="flex flex-col leading-tight">
             <span className={`text-base font-bold ${isDark ? "text-white" : "text-slate-900"}`}>
-              FoodScan AI
+              {t("brand.name")}
             </span>
             <span className={`text-xs ${isDark ? "text-emerald-100/70" : "text-slate-500"}`}>
-              OCR for packaged food labels
+              {t("brand.taglineShort")}
             </span>
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+<nav className="hidden items-center gap-8 md:flex">
           {navLinks.map((item) => (
             <a
               key={item.href}
@@ -118,13 +94,13 @@ export default function AuthShell({
                 : "border border-slate-200/80 bg-white/90 text-slate-800 shadow-sm hover:border-slate-300 hover:bg-white"
             }`}
           >
-            Sign in
+            {t("auth.signIn")}
           </Link>
           <Link
             to={ROUTES.REGISTER}
             className={`${linkButton} bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-500 text-white shadow-[0_18px_40px_-20px_rgba(22,163,74,0.95)] hover:-translate-y-0.5`}
           >
-            Start free
+            {t("auth.startFree")}
           </Link>
         </div>
       </header>
@@ -139,7 +115,7 @@ export default function AuthShell({
             }`}
           >
             <span className="h-2 w-2 rounded-full bg-lime-500" />
-            New product scanner
+            {t("auth.newProductScanner")}
           </span>
 
           <div className="space-y-4">
@@ -148,16 +124,14 @@ export default function AuthShell({
                 isDark ? "text-white" : "text-slate-950"
               }`}
             >
-              Know what is inside every packaged food before you trust it.
+              {t("auth.heroTitle")}
             </h1>
             <p
               className={`max-w-2xl text-lg leading-8 ${
                 isDark ? "text-emerald-50/80" : "text-slate-600"
               }`}
             >
-              FoodScan AI turns a label photo into cleaned OCR text, ingredient
-              parsing, allergen detection, and a simple health score in one
-              workflow.
+              {t("auth.heroDescription")}
             </p>
           </div>
 
@@ -166,7 +140,7 @@ export default function AuthShell({
               to={ROUTES.REGISTER}
               className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3.5 text-base font-semibold text-emerald-950 transition hover:-translate-y-0.5"
             >
-              Start free
+              {t("auth.startFree")}
             </Link>
             <a
               href="#how-it-works"
@@ -176,7 +150,7 @@ export default function AuthShell({
                   : "border-emerald-200 bg-white/80 text-emerald-900 hover:bg-white"
               }`}
             >
-              How it works
+              {t("auth.howItWorksLink")}
             </a>
           </div>
 
@@ -213,10 +187,10 @@ export default function AuthShell({
                     isDark ? "text-emerald-200" : "text-emerald-700"
                   }`}
                 >
-                  How it works
+                  {t("auth.howItWorksTitle")}
                 </p>
                 <h2 className={`mt-2 text-2xl font-bold ${isDark ? "text-white" : "text-slate-950"}`}>
-                  A simple flow that turns labels into insights.
+                  {t("auth.howItWorksHeading")}
                 </h2>
               </div>
               <span
@@ -224,7 +198,7 @@ export default function AuthShell({
                   isDark ? "bg-white/10 text-emerald-100" : "bg-emerald-100 text-emerald-900"
                 }`}
               >
-                In seconds
+                {t("auth.inSeconds")}
               </span>
             </div>
 
@@ -258,7 +232,7 @@ export default function AuthShell({
                 isDark ? "text-emerald-200" : "text-emerald-800"
               }`}
             >
-              Trust and security
+              {t("auth.trustLabel")}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               {trustPills.map((item) => (

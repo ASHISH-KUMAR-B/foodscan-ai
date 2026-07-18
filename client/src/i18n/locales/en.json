@@ -1,0 +1,280 @@
+{
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "scan": "Scan",
+    "history": "History",
+    "settings": "Settings",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "startScan": "Start scan",
+    "createAccount": "Create account",
+    "profile": "Profile",
+    "join": "Join"
+  },
+  "brand": {
+    "name": "FoodScan AI",
+    "tagline": "OCR-powered product intelligence",
+    "taglineShort": "OCR for packaged food labels",
+    "footer": "FoodScan AI • Scan smarter, eat better"
+  },
+  "home": {
+    "eyebrow": "FoodScan AI",
+    "heroTitle": "Turn a food label into clear health insights in seconds.",
+    "heroDescription": "Scan packaged food labels, extract ingredients and nutrition details, detect allergens, and get a cleaner view of what is actually inside the product.",
+    "startScanning": "Start scanning",
+    "viewDashboard": "View dashboard",
+    "miniCards": {
+      "ocrTitle": "OCR",
+      "ocrText": "Read labels from camera images",
+      "scoreTitle": "Score",
+      "scoreText": "Quick health summary",
+      "alertsTitle": "Alerts",
+      "alertsText": "Allergens and restricted ingredients"
+    },
+    "previewLabel": "Scan preview",
+    "previewTitle": "A better label workflow",
+    "aiPowered": "AI powered",
+    "previewSteps": [
+      "Upload or capture an image",
+      "Run OCR and ingredient parsing",
+      "Review nutrition, allergens, and tips"
+    ],
+    "highlights": [
+      {
+        "title": "OCR that reads labels",
+        "description": "Capture the ingredient panel or nutrition table and let the backend clean the text for analysis."
+      },
+      {
+        "title": "Health-first insights",
+        "description": "See allergens, restricted ingredients, nutrition values, and a single health score in one view."
+      },
+      {
+        "title": "Fast mobile workflow",
+        "description": "The scan flow is built for camera use first, so it feels natural on a phone and still works on desktop."
+      }
+    ]
+  },
+  "dashboard": {
+    "eyebrow": "Dashboard",
+    "title": "Welcome back to your scan workspace.",
+    "description": "Your dashboard will eventually track scans, health trends, and ingredient history. For now, this is the place to jump back into a fresh scan.",
+    "scanNewProduct": "Scan new product",
+    "viewHistory": "View history",
+    "scanSummary": "Scan summary",
+    "stats": {
+      "totalScans": "Total scans",
+      "healthyPicks": "Healthy picks",
+      "warnings": "Warnings"
+    },
+    "quickWins": {
+      "label": "Quick wins",
+      "items": [
+        "Review your latest scans at a glance.",
+        "Spot repeat ingredients and common allergens.",
+        "Jump back into the scan flow in one tap."
+      ]
+    }
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "startFree": "Start free",
+    "howItWorksLink": "How it works",
+    "navLinks": {
+      "howItWorks": "How it works",
+      "features": "Features",
+      "security": "Security"
+    },
+    "newProductScanner": "New product scanner",
+    "heroTitle": "Know what is inside every packaged food before you trust it.",
+    "heroDescription": "FoodScan AI turns a label photo into cleaned OCR text, ingredient parsing, allergen detection, and a simple health score in one workflow.",
+    "featureCards": [
+      { "title": "OCR cleanup", "description": "Turn a package photo into readable text that your app can analyze." },
+      { "title": "Ingredient parser", "description": "Detect ingredients, allergens, and restricted items in plain language." },
+      { "title": "Health score", "description": "See a simple score that helps you understand the product at a glance." }
+    ],
+    "howItWorksTitle": "How it works",
+    "howItWorksHeading": "A simple flow that turns labels into insights.",
+    "inSeconds": "In seconds",
+    "steps": [
+      "Capture the label or nutrition panel.",
+      "Run OCR and text cleanup in the backend.",
+      "Review ingredients, warnings, and nutrition together."
+    ],
+    "trustLabel": "Trust and security",
+    "trustPills": [
+      "Mobile-friendly scanning",
+      "Fast analysis flow",
+      "Built for packaged foods"
+    ],
+    "login": {
+      "eyebrow": "Secure sign in",
+      "title": "Login",
+      "description": "Use your account to scan food labels, review nutrition, and track the products you check most.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Password",
+      "submitting": "Logging in...",
+      "submit": "Login",
+      "footerText": "No account yet?",
+      "footerLink": "Register",
+      "successToast": "Login successful"
+    },
+    "register": {
+      "eyebrow": "Create account",
+      "title": "Register",
+      "description": "Make an account to save scans, compare products later, and keep your food insights in one place.",
+      "nameLabel": "Name",
+      "namePlaceholder": "Your name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Password",
+      "submitting": "Creating account...",
+      "submit": "Register",
+      "footerText": "Already have an account?",
+      "footerLink": "Sign in",
+      "successToast": "Registration successful"
+    }
+  },
+  "mobileNav": {
+    "profile": "Profile",
+    "join": "Join"
+  },
+  "emptyState": {
+    "noScansTitle": "No scans yet",
+    "noScansDescription": "Once you start scanning products, your results will appear here with the product name, health score, and quick access to the full analysis."
+  },
+  "scan": {
+    "eyebrow": "Scan workspace",
+    "heroTitle": "Camera-first OCR for packaged food labels.",
+    "heroDescription": "Upload a package photo, let the backend clean the OCR text, and review ingredients, allergens, and nutrition in one structured view.",
+    "badges": {
+      "ocr": "OCR extraction",
+      "healthScore": "Health score",
+      "nutritionFacts": "Nutrition facts",
+      "allergenChecks": "Allergen checks"
+    },
+    "howItWorksTitle": "How it works",
+    "howItWorksSteps": [
+      "Capture or upload the ingredient panel.",
+      "Run OCR and cleanup in the backend.",
+      "Review parsed ingredients, nutrition, and warnings."
+    ],
+    "result": {
+      "title": "Scan result",
+      "scoreExcellent": "Excellent",
+      "scoreModerate": "Moderate",
+      "scoreNeedsAttention": "Needs attention",
+      "healthScoreLabel": "Health score",
+      "unknownProduct": "Unknown product",
+      "ingredientsLabel": "Ingredients",
+      "ingredientsDetected": "{{count}} detected",
+      "none": "None",
+      "allergensLabel": "Allergens",
+      "flaggedCount": "{{count}} flagged",
+      "noneDetected": "None detected",
+      "restrictedLabel": "Restricted"
+    },
+    "nutritionTitle": "Nutrition",
+    "nutritionFields": {
+      "calories": "Calories",
+      "protein": "Protein",
+      "fat": "Fat",
+      "carbohydrates": "Carbs",
+      "sugar": "Sugar",
+      "fiber": "Fiber",
+      "sodium": "Sodium"
+    },
+    "ingredientsSection": {
+      "title": "Ingredients",
+      "empty": "No ingredients were detected from the current image."
+    },
+    "alerts": {
+      "title": "Alerts",
+      "allergens": "Allergens",
+      "noAllergens": "No allergens detected.",
+      "restricted": "Restricted ingredients",
+      "noRestricted": "No restricted ingredients detected."
+    },
+    "tipsSection": {
+      "title": "Health tips",
+      "empty": "No tips were generated for this scan yet."
+    },
+    "emptyResult": {
+      "title": "Your analysis will appear here",
+      "description": "Choose a clear food label image, run the scan, and the OCR results, ingredient parsing, and nutrition summary will populate this panel."
+    }
+  },
+  "scanPreview": {
+    "readyTitle": "Image ready for scan",
+    "readyDescription": "Analyze to run OCR, ingredient parsing, and health scoring.",
+    "analyze": "Analyze image",
+    "analyzing": "Analyzing...",
+    "remove": "Remove"
+  },
+  "settings": {
+    "eyebrow": "Settings",
+    "title": "Tune the scan experience to your routine.",
+    "description": "These preferences are stored locally for now so the interface feels responsive while the backend profile settings are still in progress.",
+    "save": "Save preferences",
+    "saved": "Saved",
+    "resetDefaults": "Reset defaults",
+    "savedLocallyTitle": "Saved locally",
+    "savedLocallyDescription": "These controls update the current browser session and local storage.",
+    "cards": {
+      "language": { "title": "Language", "description": "Choose the language that feels easiest while scanning and reviewing." },
+      "reminders": { "title": "Reminders", "description": "Keep lightweight reminders on so you remember to scan new products." },
+      "camera": { "title": "Camera mode", "description": "Prefer the rear camera for packaging or switch to manual upload flow." }
+    },
+    "general": "General",
+    "language": "Language",
+    "theme": "Theme",
+    "light": "Light",
+    "lightDesc": "Bright, clean, and readable",
+    "dark": "Dark",
+    "darkDesc": "Better for low-light scanning",
+    "scanningTitle": "Scanning",
+    "reminderPref": "Reminder preference",
+    "on": "On",
+    "onDesc": "Keep a nudge for repeat scans",
+    "off": "Off",
+    "offDesc": "Keep the UI minimal",
+    "defaultCamera": "Default camera mode",
+    "rearCamera": "Rear camera",
+    "frontCamera": "Front camera",
+    "manualUpload": "Manual upload"
+  },
+  "historyPage": {
+    "eyebrow": "History",
+    "title": "Keep track of every food scan.",
+    "description": "Every product you scan is saved here automatically, with its health score and safety status for quick reference later.",
+    "scanNewProduct": "Scan new product",
+    "exportSoon": "Export history soon",
+    "whatShows": "What history shows",
+    "tips": [
+      "Scanned products will appear here in chronological order.",
+      "You will be able to compare repeated products over time.",
+      "The history page is ready for API-backed scan records later."
+    ],
+    "loading": "Loading your scan history...",
+    "error": "Could not load your history. Please try again.",
+    "detailTitle": "Scan detail",
+    "close": "Close",
+    "loadingScan": "Loading scan...",
+    "ingredientsTitle": "Ingredients",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this scan? This cannot be undone.",
+    "allergensPrefix": "Allergens:"
+  },
+  "imageUploader": {
+    "step1": "Step 1",
+    "title": "Upload a clear ingredient label",
+    "description": "Capture the nutrition panel or ingredient list in good light. The cleaner the image, the better the OCR and ingredient parsing.",
+    "cta": "Capture / Upload Image"
+  }
+
+
+}

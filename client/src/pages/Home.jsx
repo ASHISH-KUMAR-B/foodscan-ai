@@ -1,36 +1,28 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import Card from "../components/common/Card.jsx";
 import { ROUTES } from "../constants/routes.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 
-const highlights = [
-  {
-    title: "OCR that reads labels",
-    description:
-      "Capture the ingredient panel or nutrition table and let the backend clean the text for analysis.",
-  },
-  {
-    title: "Health-first insights",
-    description:
-      "See allergens, restricted ingredients, nutrition values, and a single health score in one view.",
-  },
-  {
-    title: "Fast mobile workflow",
-    description:
-      "The scan flow is built for camera use first, so it feels natural on a phone and still works on desktop.",
-  },
-];
-
 export default function Home() {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
+
+  const highlights = t("home.highlights", { returnObjects: true });
+  const miniCards = [
+    [t("home.miniCards.ocrTitle"), t("home.miniCards.ocrText")],
+    [t("home.miniCards.scoreTitle"), t("home.miniCards.scoreText")],
+    [t("home.miniCards.alertsTitle"), t("home.miniCards.alertsText")],
+  ];
+  const previewSteps = t("home.previewSteps", { returnObjects: true });
 
   return (
     <div className="space-y-10 py-8 sm:py-12">
       <section className="grid items-center gap-8 lg:grid-cols-[1.15fr_0.85fr]">
         <div className="space-y-6">
           <span className="inline-flex rounded-full border border-emerald-200 bg-emerald-100 px-4 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-emerald-900">
-            FoodScan AI
+            {t("home.eyebrow")}
           </span>
 
           <div className="space-y-4">
@@ -39,7 +31,7 @@ export default function Home() {
                 isDark ? "text-white" : "text-slate-950"
               }`}
             >
-              Turn a food label into clear health insights in seconds.
+              {t("home.heroTitle")}
             </h1>
 
             <p
@@ -47,9 +39,7 @@ export default function Home() {
                 isDark ? "text-slate-300" : "text-slate-600"
               }`}
             >
-              Scan packaged food labels, extract ingredients and nutrition
-              details, detect allergens, and get a cleaner view of what is
-              actually inside the product.
+              {t("home.heroDescription")}
             </p>
           </div>
 
@@ -58,23 +48,19 @@ export default function Home() {
               to={ROUTES.SCAN}
               className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-500 px-6 py-3.5 text-base font-medium text-white shadow-[0_18px_40px_-20px_rgba(22,163,74,0.85)] transition hover:-translate-y-0.5"
             >
-              Start scanning
+              {t("home.startScanning")}
             </Link>
 
             <Link
               to={ROUTES.DASHBOARD}
               className="inline-flex items-center justify-center rounded-full border border-slate-200/80 bg-white/90 px-6 py-3.5 text-base font-medium text-slate-800 shadow-sm transition hover:border-slate-300 hover:bg-white"
             >
-              View dashboard
+              {t("home.viewDashboard")}
             </Link>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3">
-            {[
-              ["OCR", "Read labels from camera images"],
-              ["Score", "Quick health summary"],
-              ["Alerts", "Allergens and restricted ingredients"],
-            ].map(([title, text]) => (
+            {miniCards.map(([title, text]) => (
               <Card key={title} className="p-4">
                 <p
                   className={`text-sm font-semibold ${
@@ -100,21 +86,17 @@ export default function Home() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm uppercase tracking-[0.28em] text-emerald-200">
-                  Scan preview
+                  {t("home.previewLabel")}
                 </p>
-                <h2 className="mt-2 text-2xl font-bold">A better label workflow</h2>
+                <h2 className="mt-2 text-2xl font-bold">{t("home.previewTitle")}</h2>
               </div>
               <div className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-100">
-                AI powered
+                {t("home.aiPowered")}
               </div>
             </div>
 
             <div className="mt-6 grid gap-3">
-              {[
-                "Upload or capture an image",
-                "Run OCR and ingredient parsing",
-                "Review nutrition, allergens, and tips",
-              ].map((step, index) => (
+              {previewSteps.map((step, index) => (
                 <div
                   key={step}
                   className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3"

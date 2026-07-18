@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import EmptyState from "../../../components/common/EmptyState.jsx";
 import Card from "../../../components/common/Card.jsx";
@@ -8,37 +9,15 @@ import { useTheme } from "../../../context/ThemeContext.jsx";
 import ScanPreview from "../components/ScanPreview.jsx";
 import { useScanMutation } from "../hooks/useScanMutation.js";
 
-const nutritionFields = [
-  { key: "calories", label: "Calories" },
-  { key: "protein", label: "Protein" },
-  { key: "fat", label: "Fat" },
-  { key: "carbohydrates", label: "Carbs" },
-  { key: "sugar", label: "Sugar" },
-  { key: "fiber", label: "Fiber" },
-  { key: "sodium", label: "Sodium" },
-];
-
 function formatValue(value) {
-  if (value === 0) {
-    return "0";
-  }
-
-  if (value === null || value === undefined || value === "") {
-    return "N/A";
-  }
-
+  if (value === 0) return "0";
+  if (value === null || value === undefined || value === "") return "N/A";
   return value;
 }
 
 function scoreTone(score) {
-  if (score >= 80) {
-    return "emerald";
-  }
-
-  if (score >= 60) {
-    return "amber";
-  }
-
+  if (score >= 80) return "emerald";
+  if (score >= 60) return "amber";
   return "rose";
 }
 
@@ -80,9 +59,7 @@ function InfoPill({ label, value, tone = "neutral" }) {
 
   return (
     <div className={`rounded-2xl px-4 py-3 text-sm font-medium ${toneClass}`}>
-      <span className="block text-[11px] uppercase tracking-[0.22em] opacity-70">
-        {label}
-      </span>
+      <span className="block text-[11px] uppercase tracking-[0.22em] opacity-70">{label}</span>
       <span className="mt-1 block text-base font-semibold">{value}</span>
     </div>
   );
@@ -105,9 +82,7 @@ function Badge({ children, tone = "neutral" }) {
       }[tone];
 
   return (
-    <span
-      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${toneClass}`}
-    >
+    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${toneClass}`}>
       {children}
     </span>
   );
@@ -115,27 +90,34 @@ function Badge({ children, tone = "neutral" }) {
 
 export default function Scan() {
   const { isDark } = useTheme();
+  const { t } = useTranslation();
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState("");
   const [result, setResult] = useState(null);
 
   const { mutate, isPending } = useScanMutation();
 
+  const nutritionFields = [
+    { key: "calories", label: t("scan.nutritionFields.calories") },
+    { key: "protein", label: t("scan.nutritionFields.protein") },
+    { key: "fat", label: t("scan.nutritionFields.fat") },
+    { key: "carbohydrates", label: t("scan.nutritionFields.carbohydrates") },
+    { key: "sugar", label: t("scan.nutritionFields.sugar") },
+    { key: "fiber", label: t("scan.nutritionFields.fiber") },
+    { key: "sodium", label: t("scan.nutritionFields.sodium") },
+  ];
+
+  const howItWorksSteps = t("scan.howItWorksSteps", { returnObjects: true });
+
   useEffect(() => {
     return () => {
-      if (preview) {
-        URL.revokeObjectURL(preview);
-      }
+      if (preview) URL.revokeObjectURL(preview);
     };
   }, [preview]);
 
   const handleImageSelect = (file) => {
     if (!file) return;
-
-    if (preview) {
-      URL.revokeObjectURL(preview);
-    }
-
+    if (preview) URL.revokeObjectURL(preview);
     setImage(file);
     setPreview(URL.createObjectURL(file));
     setResult(null);
@@ -143,7 +125,6 @@ export default function Scan() {
 
   const handleAnalyze = () => {
     if (!image) return;
-
     const formData = new FormData();
     formData.append("image", image);
 
@@ -155,17 +136,13 @@ export default function Scan() {
   };
 
   const handleRemove = () => {
-    if (preview) {
-      URL.revokeObjectURL(preview);
-    }
-
+    if (preview) URL.revokeObjectURL(preview);
     setImage(null);
     setPreview("");
     setResult(null);
   };
 
   const score = result?.healthScore ?? 0;
-  const ingredients = result?.ingredients ?? [];
   const allergens = result?.allergens ?? [];
   const restrictedIngredients = result?.restrictedIngredients ?? [];
   const tips = result?.tips ?? [];
@@ -175,7 +152,7 @@ export default function Scan() {
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <Card className="p-7 sm:p-8">
           <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-emerald-900">
-            Scan workspace
+            {t("scan.eyebrow")}
           </span>
 
           <h1
@@ -183,33 +160,24 @@ export default function Scan() {
               isDark ? "text-white" : "text-slate-950"
             }`}
           >
-            Camera-first OCR for packaged food labels.
+            {t("scan.heroTitle")}
           </h1>
 
-          <p
-            className={`mt-4 max-w-2xl text-base leading-7 ${
-              isDark ? "text-slate-300" : "text-slate-600"
-            }`}
-          >
-            Upload a package photo, let the backend clean the OCR text, and
-            review ingredients, allergens, and nutrition in one structured view.
+          <p className={`mt-4 max-w-2xl text-base leading-7 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+            {t("scan.heroDescription")}
           </p>
 
           <div className="mt-6 flex flex-wrap gap-2">
-            <Badge tone="emerald">OCR extraction</Badge>
-            <Badge tone="amber">Health score</Badge>
-            <Badge tone="neutral">Nutrition facts</Badge>
-            <Badge tone="rose">Allergen checks</Badge>
+            <Badge tone="emerald">{t("scan.badges.ocr")}</Badge>
+            <Badge tone="amber">{t("scan.badges.healthScore")}</Badge>
+            <Badge tone="neutral">{t("scan.badges.nutritionFacts")}</Badge>
+            <Badge tone="rose">{t("scan.badges.allergenChecks")}</Badge>
           </div>
         </Card>
 
-        <SectionCard title="How it works">
+        <SectionCard title={t("scan.howItWorksTitle")}>
           <div className="space-y-3">
-            {[
-              "Capture or upload the ingredient panel.",
-              "Run OCR and cleanup in the backend.",
-              "Review parsed ingredients, nutrition, and warnings.",
-            ].map((step, index) => (
+            {howItWorksSteps.map((step, index) => (
               <div
                 key={step}
                 className={`flex items-start gap-4 rounded-3xl border px-4 py-4 ${
@@ -223,9 +191,7 @@ export default function Scan() {
                 >
                   0{index + 1}
                 </span>
-                <p className={`text-sm leading-6 ${isDark ? "text-slate-200" : "text-slate-700"}`}>
-                  {step}
-                </p>
+                <p className={`text-sm leading-6 ${isDark ? "text-slate-200" : "text-slate-700"}`}>{step}</p>
               </div>
             ))}
           </div>
@@ -234,24 +200,15 @@ export default function Scan() {
 
       <div className="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
         <div className="space-y-6">
-          <ImageUploader
-            onSelect={handleImageSelect}
-            accept="image/*"
-            capture="environment"
-          />
+          <ImageUploader onSelect={handleImageSelect} accept="image/*" capture="environment" />
 
-          <ScanPreview
-            preview={preview}
-            loading={isPending}
-            onAnalyze={handleAnalyze}
-            onRemove={handleRemove}
-          />
+          <ScanPreview preview={preview} loading={isPending} onAnalyze={handleAnalyze} onRemove={handleRemove} />
         </div>
 
         <div className="space-y-6">
           {result ? (
             <>
-              <SectionCard title="Scan result">
+              <SectionCard title={t("scan.result.title")}>
                 <div className="grid gap-6 md:grid-cols-[auto_1fr] md:items-start">
                   <div
                     className={`flex h-32 w-32 flex-col items-center justify-center rounded-[32px] bg-gradient-to-br ${
@@ -263,43 +220,29 @@ export default function Scan() {
                     } text-white shadow-[0_24px_60px_-24px_rgba(15,23,42,0.6)]`}
                   >
                     <span className="text-4xl font-bold">{score}</span>
-                    <span className="mt-1 text-xs uppercase tracking-[0.24em] text-white/80">
-                      /100
-                    </span>
+                    <span className="mt-1 text-xs uppercase tracking-[0.24em] text-white/80">/100</span>
                   </div>
 
                   <div className="space-y-4">
                     <div className="flex flex-wrap items-center gap-3">
-                      <Badge
-                        tone={
-                          score >= 80 ? "emerald" : score >= 60 ? "amber" : "rose"
-                        }
-                      >
-                        {score >= 80 ? "Excellent" : score >= 60 ? "Moderate" : "Needs attention"}
+                      <Badge tone={score >= 80 ? "emerald" : score >= 60 ? "amber" : "rose"}>
+                        {score >= 80
+                          ? t("scan.result.scoreExcellent")
+                          : score >= 60
+                            ? t("scan.result.scoreModerate")
+                            : t("scan.result.scoreNeedsAttention")}
                       </Badge>
-                      <span
-                        className={`text-sm font-medium ${
-                          isDark ? "text-slate-300" : "text-slate-500"
-                        }`}
-                      >
-                        Health score
+                      <span className={`text-sm font-medium ${isDark ? "text-slate-300" : "text-slate-500"}`}>
+                        {t("scan.result.healthScoreLabel")}
                       </span>
                     </div>
 
                     <div>
-                      <h2
-                        className={`text-2xl font-bold ${
-                          isDark ? "text-white" : "text-slate-950"
-                        }`}
-                      >
-                        {result.verdict || "Analysis complete"}
+                      <h2 className={`text-2xl font-bold ${isDark ? "text-white" : "text-slate-950"}`}>
+                        {result.verdict || t("scan.result.title")}
                       </h2>
-                      <p
-                        className={`mt-2 max-w-2xl text-sm leading-6 ${
-                          isDark ? "text-slate-300" : "text-slate-600"
-                        }`}
-                      >
-                        {result.productName || "Unknown product"}{" "}
+                      <p className={`mt-2 max-w-2xl text-sm leading-6 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+                        {result.productName || t("scan.result.unknownProduct")}{" "}
                         {result.brand ? `• ${result.brand}` : ""}
                       </p>
                     </div>
@@ -327,24 +270,28 @@ export default function Scan() {
 
                     <div className="flex flex-wrap gap-2">
                       <InfoPill
-                        label="Ingredients"
+                        label={t("scan.result.ingredientsLabel")}
                         value={
-                          ingredients.length ? `${ingredients.length} detected` : "None"
+                          result.ingredientAnalysis?.length
+                            ? t("scan.result.ingredientsDetected", { count: result.ingredientAnalysis.length })
+                            : t("scan.result.none")
                         }
                       />
                       <InfoPill
-                        label="Allergens"
+                        label={t("scan.result.allergensLabel")}
                         value={
-                          allergens.length ? `${allergens.length} flagged` : "None detected"
+                          allergens.length
+                            ? t("scan.result.flaggedCount", { count: allergens.length })
+                            : t("scan.result.noneDetected")
                         }
                         tone={allergens.length ? "amber" : "emerald"}
                       />
                       <InfoPill
-                        label="Restricted"
+                        label={t("scan.result.restrictedLabel")}
                         value={
                           restrictedIngredients.length
-                            ? `${restrictedIngredients.length} flagged`
-                            : "None detected"
+                            ? t("scan.result.flaggedCount", { count: restrictedIngredients.length })
+                            : t("scan.result.noneDetected")
                         }
                         tone={restrictedIngredients.length ? "rose" : "emerald"}
                       />
@@ -353,20 +300,16 @@ export default function Scan() {
                 </div>
               </SectionCard>
 
-              <SectionCard title="Nutrition">
+              <SectionCard title={t("scan.nutritionTitle")}>
                 <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {nutritionFields.map((item) => (
-                    <InfoPill
-                      key={item.key}
-                      label={item.label}
-                      value={formatValue(result.nutrition?.[item.key])}
-                    />
+                    <InfoPill key={item.key} label={item.label} value={formatValue(result.nutrition?.[item.key])} />
                   ))}
                 </div>
               </SectionCard>
 
               <div className="grid gap-6 lg:grid-cols-2">
-                <SectionCard title="Ingredients">
+                <SectionCard title={t("scan.ingredientsSection.title")}>
                   {result.ingredientAnalysis?.length ? (
                     <div className="space-y-2">
                       {result.ingredientAnalysis.map((item) => (
@@ -383,62 +326,48 @@ export default function Scan() {
                           } ${isDark ? "text-slate-100" : "text-slate-800"}`}
                         >
                           <p className="font-semibold">{item.name}</p>
-                          {item.description && (
-                            <p className="mt-0.5 text-xs opacity-70">{item.description}</p>
-                          )}
+                          {item.description && <p className="mt-0.5 text-xs opacity-70">{item.description}</p>}
                         </div>
                       ))}
                     </div>
                   ) : (
                     <p className={`text-sm leading-6 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
-                      No ingredients were detected from the current image.
+                      {t("scan.ingredientsSection.empty")}
                     </p>
                   )}
                 </SectionCard>
 
-                <SectionCard title="Alerts">
+                <SectionCard title={t("scan.alerts.title")}>
                   <div className="space-y-4">
                     <div>
-                      <p
-                        className={`text-xs font-semibold uppercase tracking-[0.24em] ${
-                          isDark ? "text-slate-300" : "text-slate-500"
-                        }`}
-                      >
-                        Allergens
+                      <p className={`text-xs font-semibold uppercase tracking-[0.24em] ${isDark ? "text-slate-300" : "text-slate-500"}`}>
+                        {t("scan.alerts.allergens")}
                       </p>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {allergens.length ? (
                           allergens.map((item) => (
-                            <Badge key={item} tone="amber">
-                              {item}
-                            </Badge>
+                            <Badge key={item} tone="amber">{item}</Badge>
                           ))
                         ) : (
                           <span className={`text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>
-                            No allergens detected.
+                            {t("scan.alerts.noAllergens")}
                           </span>
                         )}
                       </div>
                     </div>
 
                     <div>
-                      <p
-                        className={`text-xs font-semibold uppercase tracking-[0.24em] ${
-                          isDark ? "text-slate-300" : "text-slate-500"
-                        }`}
-                      >
-                        Restricted ingredients
+                      <p className={`text-xs font-semibold uppercase tracking-[0.24em] ${isDark ? "text-slate-300" : "text-slate-500"}`}>
+                        {t("scan.alerts.restricted")}
                       </p>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {restrictedIngredients.length ? (
                           restrictedIngredients.map((item) => (
-                            <Badge key={item} tone="rose">
-                              {item}
-                            </Badge>
+                            <Badge key={item} tone="rose">{item}</Badge>
                           ))
                         ) : (
                           <span className={`text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>
-                            No restricted ingredients detected.
+                            {t("scan.alerts.noRestricted")}
                           </span>
                         )}
                       </div>
@@ -447,7 +376,7 @@ export default function Scan() {
                 </SectionCard>
               </div>
 
-              <SectionCard title="Health tips">
+              <SectionCard title={t("scan.tipsSection.title")}>
                 {tips.length ? (
                   <ul className="space-y-3">
                     {tips.map((item) => (
@@ -466,17 +395,14 @@ export default function Scan() {
                   </ul>
                 ) : (
                   <p className={`text-sm leading-6 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
-                    No tips were generated for this scan yet.
+                    {t("scan.tipsSection.empty")}
                   </p>
                 )}
               </SectionCard>
             </>
           ) : (
             <Card className="p-6 sm:p-8">
-              <EmptyState
-                title="Your analysis will appear here"
-                description="Choose a clear food label image, run the scan, and the OCR results, ingredient parsing, and nutrition summary will populate this panel."
-              />
+              <EmptyState title={t("scan.emptyResult.title")} description={t("scan.emptyResult.description")} />
             </Card>
           )}
         </div>
