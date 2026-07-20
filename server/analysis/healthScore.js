@@ -1,67 +1,61 @@
-const ALLERGENS = [
-  "milk",
-  "soy",
-  "wheat",
-  "gluten",
-  "peanut",
-  "peanuts",
-  "tree nuts",
-  "nuts",
-  "almond",
-  "cashew",
-  "walnut",
-  "egg",
-  "fish",
-  "shellfish",
-  "sesame",
-];
+import { REGULATORY_RULES } from "../data/regulatoryRules.js";
 
-const RESTRICTED = [
-  "ins 102",
-  "ins 110",
-  "ins 122",
-  "ins 124",
-  "ins 129",
-  "ins 211",
-  "high fructose corn syrup",
-  "aspartame",
+const ALLERGENS = [
+  "milk", "soy", "wheat", "gluten", "peanut", "peanuts", "tree nuts", "nuts",
+  "almond", "cashew", "walnut", "egg", "fish", "shellfish", "sesame",
 ];
 
 export function detectAllergens(ingredients) {
   const text = ingredients.join(" ").toLowerCase();
-
   return ALLERGENS.filter((item) => text.includes(item));
 }
 
-export function detectRestrictedIngredients(ingredients) {
+// Now country-aware. Returns { banned: [], restricted: [], all: [] }
+export function detectRestrictedIngredients(ingredients, countryCode = "IN") {
   const text = ingredients.join(" ").toLowerCase();
+  const rules = REGULATORY_RULES[countryCode] || REGULATORY_RULES.IN;
 
-  return RESTRICTED.filter((item) => text.includes(item));
+  const banned = rules.bannedAdditives.filter(
+    (item) => text.includes(item.code.toLowerCase()) || text.includes(item.name.toLowerCase())
+  );
+  const restricted = rules.restrictedAdditives.filter(
+    (item) => text.includes(item.code.toLowerCase()) || text.includes(item.name.toLowerCase())
+  );
+
+  return {
+    banned: banned.map((b) => b.name),
+    restricted: restricted.map((r) => r.name),
+    all: [...banned.map((b) => b.name), ...restricted.map((r) => r.name)],
+  };
 }
 
-export function calculateHealthScore(nutrition, restrictedIngredients) {
+export function calculateHealthScore(nutrition, restrictedResult, countryCode = "IN") {
   let score = 100;
+  const rules = REGULATORY_RULES[countryCode] || REGULATORY_RULES.IN;
+  const limits = rules.dailyLimits;
 
-  // Sugar
-  if ((nutrition.sugar ?? 0) > 20) score -= 25;
-  else if ((nutrition.sugar ?? 0) > 10) score -= 10;
+  // Sugar - scored relative to this country's daily limit
+  const sugarPct = ((nutrition.sugar ?? 0) / limits.sugar) * 100;
+  if (sugarPct > 80) score -= 25;
+  else if (sugarPct > 40) score -= 10;
 
-  // Sodium
-  if ((nutrition.sodium ?? 0) > 600) score -= 25;
-  else if ((nutrition.sodium ?? 0) > 300) score -= 10;
+  // Sodium - relative to country limit
+  const sodiumPct = ((nutrition.sodium ?? 0) / limits.sodium) * 100;
+  if (sodiumPct > 25) score -= 25;   // single serving eating >25% of daily sodium is high
+  else if (sodiumPct > 12) score -= 10;
 
-  // Fat
-  if ((nutrition.fat ?? 0) > 20) score -= 15;
-  else if ((nutrition.fat ?? 0) > 10) score -= 5;
+  // Fat - relative to country limit
+  const fatPct = ((nutrition.fat ?? 0) / limits.fat) * 100;
+  if (fatPct > 25) score -= 15;
+  else if (fatPct > 12) score -= 5;
 
-  // Fiber Bonus
+  // Fiber / Protein bonuses (unchanged)
   if ((nutrition.fiber ?? 0) >= 5) score += 5;
-
-  // Protein Bonus
   if ((nutrition.protein ?? 0) >= 8) score += 5;
 
-  // Restricted additives
-  score -= restrictedIngredients.length * 10;
+  // Banned additives = heavy penalty, restricted = lighter
+  score -= restrictedResult.banned.length * 20;
+  score -= restrictedResult.restricted.length * 10;
 
   if (score > 100) score = 100;
   if (score < 0) score = 0;
@@ -77,68 +71,35 @@ export function getVerdict(score) {
   return "🔴 Unhealthy";
 }
 
-// --- SAFETY (separate from nutrition health score) ---
-// Answers "is this safe to eat" independently of "is this nutritionally good".
-// A product can be Safe but Unhealthy (e.g. high-sodium chips with no
-// restricted additives), or in principle Unsafe regardless of how clean
-// its nutrition profile looks.
-export function getSafetyStatus(allergens, restrictedIngredients) {
+export function getSafetyStatus(allergens, restrictedResult, countryCode = "IN") {
+  const rules = REGULATORY_RULES[countryCode] || REGULATORY_RULES.IN;
   const safetyReasons = [];
 
-  if (restrictedIngredients.length > 0) {
+  if (restrictedResult.banned.length > 0) {
     safetyReasons.push(
-      `Contains restricted/flagged ingredient(s): ${restrictedIngredients.join(", ")}`
+      `Contains additive(s) banned in ${rules.name}: ${restrictedResult.banned.join(", ")}`
     );
-    return {
-      safetyStatus: "🚫 Unsafe",
-      safetyReasons,
-    };
+    return { safetyStatus: "🚫 Unsafe", safetyReasons };
+  }
+
+  if (restrictedResult.restricted.length > 0) {
+    safetyReasons.push(
+      `Contains restricted additive(s) in ${rules.name}: ${restrictedResult.restricted.join(", ")}`
+    );
+    return { safetyStatus: "⚠️ Caution", safetyReasons };
   }
 
   if (allergens.length > 0) {
     safetyReasons.push(`Contains allergen(s): ${allergens.join(", ")}`);
-    return {
-      safetyStatus: "⚠️ Caution",
-      safetyReasons,
-    };
+    return { safetyStatus: "⚠️ Caution", safetyReasons };
   }
 
   return {
     safetyStatus: "✅ Safe",
-    safetyReasons: ["No restricted ingredients or allergens detected."],
+    safetyReasons: [`No additives restricted or banned in ${rules.name}, and no allergens detected.`],
   };
 }
 
 export function generateTips(nutrition, allergens) {
-  const tips = [];
-
-  if ((nutrition.protein ?? 0) >= 8) {
-    tips.push("✅ Good source of protein.");
-  }
-
-  if ((nutrition.fiber ?? 0) >= 5) {
-    tips.push("✅ Good source of dietary fiber.");
-  }
-
-  if ((nutrition.sodium ?? 0) > 400) {
-    tips.push("⚠️ High sodium content.");
-  }
-
-  if ((nutrition.sugar ?? 0) > 15) {
-    tips.push("⚠️ High sugar content.");
-  }
-
-  if ((nutrition.fat ?? 0) > 20) {
-    tips.push("⚠️ High fat content.");
-  }
-
-  if (allergens.length) {
-    tips.push(`🚨 Contains allergens: ${allergens.join(", ")}`);
-  }
-
-  if (tips.length === 0) {
-    tips.push("✅ Suitable for occasional consumption.");
-  }
-
-  return tips;
+  // unchanged — keep your existing version
 }

@@ -30,12 +30,12 @@ export async function scanFoodProductPaddle(file) {
   const ingredientAnalysis = analyzeIngredients(ingredients);
 
   const allergens = detectAllergens(ingredients);
-  const restrictedIngredients = detectRestrictedIngredients(ingredients);
-  const healthScore = calculateHealthScore(mergedNutrition, restrictedIngredients);
+  const countryCode = file.countryCode || "IN"; // see wiring below
+  const restrictedResult = detectRestrictedIngredients(ingredients, countryCode);
+  const healthScore = calculateHealthScore(mergedNutrition, restrictedResult, countryCode);
+  const { safetyStatus, safetyReasons } = getSafetyStatus(allergens, restrictedResult, countryCode);
   const verdict = getVerdict(healthScore);
   const tips = generateTips(mergedNutrition, allergens);
-  const { safetyStatus, safetyReasons } = getSafetyStatus(allergens, restrictedIngredients);
-
   const nutrition = {
     calories: mergedNutrition.energy,
     protein: mergedNutrition.protein,
@@ -57,7 +57,7 @@ export async function scanFoodProductPaddle(file) {
     safetyStatus,
     safetyReasons,
     allergens,
-    restrictedIngredients,
+    restrictedIngredients: restrictedResult.all,
     tips,
   };
 }

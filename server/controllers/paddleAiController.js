@@ -3,7 +3,7 @@ import Scan from "../models/Scan.js";
 
 export const analyzeControllerPaddle = async (req, res) => {
   try {
-    const result = await scanFoodProductPaddle(req.file);
+    const result = await scanFoodProductPaddle(req.file, req.body.country);
 
     const savedScan = await Scan.create({
       user: req.user._id,

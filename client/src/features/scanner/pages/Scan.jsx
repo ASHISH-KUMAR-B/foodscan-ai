@@ -10,6 +10,7 @@ import ScanPreview from "../components/ScanPreview.jsx";
 import { useScanMutation } from "../hooks/useScanMutation.js";
 import { useAIInsightsMutation } from "../hooks/useAIInsightsMutation.js";
 
+
 function formatValue(value) {
   if (value === 0) return "0";
   if (value === null || value === undefined || value === "") return "N/A";
@@ -95,7 +96,7 @@ export default function Scan() {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState("");
   const [result, setResult] = useState(null);
-
+  const [selectedCountry, setSelectedCountry] = useState("IN");
   const { mutate, isPending } = useScanMutation();
 
   const nutritionFields = [
@@ -130,7 +131,7 @@ export default function Scan() {
     if (!image) return;
     const formData = new FormData();
     formData.append("image", image);
-
+    formData.append("country", selectedCountry); // "IN" | "US" | "EU"
     mutate(formData, {
       onSuccess: (response) => {
         setResult(response?.data || null);
@@ -219,11 +220,28 @@ const handleGetInsights = () => {
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
-        <div className="space-y-6">
-          <ImageUploader onSelect={handleImageSelect} accept="image/*" capture="environment" />
+<div className="space-y-6">
+  <div className="mb-4">
+    <label className={`text-xs font-semibold uppercase tracking-[0.22em] ${isDark ? "text-slate-300" : "text-slate-500"}`}>
+      Region / Regulations
+    </label>
+    <select
+      value={selectedCountry}
+      onChange={(e) => setSelectedCountry(e.target.value)}
+      className={`mt-1 block w-full rounded-xl border px-3 py-2 text-sm font-medium ${
+        isDark ? "border-white/10 bg-slate-900 text-white" : "border-slate-200 bg-white text-slate-800"
+      }`}
+    >
+      <option value="IN">India (FSSAI)</option>
+      <option value="US">United States (FDA)</option>
+      <option value="EU">European Union (EFSA)</option>
+    </select>
+  </div>
 
-          <ScanPreview preview={preview} loading={isPending} onAnalyze={handleAnalyze} onRemove={handleRemove} />
-        </div>
+  <ImageUploader onSelect={handleImageSelect} accept="image/*" capture="environment" />
+
+  <ScanPreview preview={preview} loading={isPending} onAnalyze={handleAnalyze} onRemove={handleRemove} />
+</div>
 
         <div className="space-y-6">
           {result ? (
