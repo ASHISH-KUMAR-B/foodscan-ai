@@ -5,5 +5,5 @@ export const ENDPOINTS = {
   IMAGE_UPLOAD: "/scan/upload",
   OCR: "/ocr",
   HISTORY: "/history",
-  AI_ANALYZE: "/ai/analyze",
+  AI_ANALYZE: "/ai/analyze-paddle",
 };

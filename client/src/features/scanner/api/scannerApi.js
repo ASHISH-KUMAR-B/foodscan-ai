@@ -11,6 +11,10 @@ export const analyzeImage = async (formData) => {
       },
     }
   );
-
   return data;
 };
+
+  export const getAIInsights = async (scanId) => {
+  const { data } = await api.post(`/ai/insights/${scanId}`);
+  return data;
+  };

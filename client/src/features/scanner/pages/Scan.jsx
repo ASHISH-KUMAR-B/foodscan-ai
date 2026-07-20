@@ -8,6 +8,7 @@ import { useTheme } from "../../../context/ThemeContext.jsx";
 
 import ScanPreview from "../components/ScanPreview.jsx";
 import { useScanMutation } from "../hooks/useScanMutation.js";
+import { useAIInsightsMutation } from "../hooks/useAIInsightsMutation.js";
 
 function formatValue(value) {
   if (value === 0) return "0";
@@ -121,6 +122,8 @@ export default function Scan() {
     setImage(file);
     setPreview(URL.createObjectURL(file));
     setResult(null);
+    setScanId(null);
+    setInsights(null);
   };
 
   const handleAnalyze = () => {
@@ -131,6 +134,7 @@ export default function Scan() {
     mutate(formData, {
       onSuccess: (response) => {
         setResult(response?.data || null);
+        setScanId(response?.scanId || null);
       },
     });
   };
@@ -140,6 +144,8 @@ export default function Scan() {
     setImage(null);
     setPreview("");
     setResult(null);
+    setScanId(null);
+    setInsights(null);
   };
 
   const score = result?.healthScore ?? 0;
@@ -147,6 +153,20 @@ export default function Scan() {
   const restrictedIngredients = result?.restrictedIngredients ?? [];
   const tips = result?.tips ?? [];
 
+  const [scanId, setScanId] = useState(null);
+const [insights, setInsights] = useState(null);
+
+const { mutate: fetchInsights, isPending: isInsightsLoading } = useAIInsightsMutation();
+
+const handleGetInsights = () => {
+  if (!scanId) return;
+
+  fetchInsights(scanId, {
+    onSuccess: (response) => {
+      setInsights(response?.data || null);
+    },
+  });
+};
   return (
     <div className="space-y-8 py-8 sm:py-12">
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
@@ -397,6 +417,63 @@ export default function Scan() {
                   <p className={`text-sm leading-6 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
                     {t("scan.tipsSection.empty")}
                   </p>
+                )}
+              </SectionCard>
+              <SectionCard title="AI Insights">
+                {!insights && (
+                  <div className="space-y-3">
+                    <p className={`text-sm leading-6 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+                      Get AI-generated notes on each ingredient and extra tips. This is supplementary and not a substitute for the analysis above.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleGetInsights}
+                      disabled={isInsightsLoading || !scanId}
+                      className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-500 px-5 py-2.5 text-sm font-medium text-white shadow-[0_18px_40px_-20px_rgba(22,163,74,0.85)] transition hover:-translate-y-0.5 disabled:opacity-50"
+                    >
+                      {isInsightsLoading ? "Generating..." : "Get AI Insights"}
+                    </button>
+                  </div>
+                )}
+
+                {insights && (
+                  <div className="space-y-4">
+                    <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-amber-800">
+                      AI-generated · supplementary
+                    </span>
+
+                    {insights.ingredientNotes?.length > 0 && (
+                      <div className="space-y-2">
+                        {insights.ingredientNotes.map((item) => (
+                          <div
+                            key={item.name}
+                            className={`rounded-xl border px-3 py-2 text-sm ${
+                              isDark ? "border-white/10 bg-white/5 text-slate-100" : "border-slate-200/60 bg-slate-50 text-slate-800"
+                            }`}
+                          >
+                            <p className="font-semibold">{item.name}</p>
+                            <p className="mt-0.5 text-xs opacity-70">{item.note}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {insights.tips?.length > 0 && (
+                      <ul className="space-y-2">
+                        {insights.tips.map((tip) => (
+                          <li
+                            key={tip}
+                            className={`flex gap-3 rounded-2xl border px-4 py-3 text-sm leading-6 ${
+                              isDark ? "border-white/10 bg-white/5 text-slate-200" : "border-slate-200/80 bg-slate-50 text-slate-700"
+                            }`}
+                          >
+                            <span className="mt-1 h-2.5 w-2.5 rounded-full bg-amber-500" />
+                            <span>{tip}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 )}
               </SectionCard>
             </>

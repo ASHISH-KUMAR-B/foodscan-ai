@@ -8,6 +8,7 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
 import { queryClient } from "./lib/queryClient.js";
 
+import "./i18n/config.js";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(

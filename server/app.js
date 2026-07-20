@@ -3,6 +3,9 @@ import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import scanRoutes from "./routes/scanRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
+import historyRoutes from "./routes/historyRoutes.js";
+import aiInsightsRoutes from "./routes/aiInsightsRoutes.js";
+import paddleAiRoutes from "./routes/paddleAiRoutes.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -17,6 +20,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/scan", scanRoutes);
 app.use("/uploads",express.static(path.join(__dirname, "uploads")));
 app.use("/api/ai", aiRoutes);
+app.use("/api/history", historyRoutes);
+app.use("/api/ai", aiInsightsRoutes);
+app.use("/api/ai", paddleAiRoutes);
 app.get("/", (req, res) => {
   res.json({
     success: true,
