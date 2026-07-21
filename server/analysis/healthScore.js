@@ -101,5 +101,34 @@ export function getSafetyStatus(allergens, restrictedResult, countryCode = "IN")
 }
 
 export function generateTips(nutrition, allergens) {
-  // unchanged — keep your existing version
+  const tips = [];
+
+  if ((nutrition.protein ?? 0) >= 8) {
+    tips.push("✅ Good source of protein.");
+  }
+
+  if ((nutrition.fiber ?? 0) >= 5) {
+    tips.push("✅ Good source of dietary fiber.");
+  }
+
+  if ((nutrition.sodium ?? 0) > 400) {
+    tips.push("⚠️ High sodium content.");
+  }
+
+  if ((nutrition.sugar ?? 0) > 15) {
+    tips.push("⚠️ High sugar content.");
+  }
+
+  if ((nutrition.fat ?? 0) > 20) {
+    tips.push("⚠️ High fat content.");
+  }
+
+  if (allergens.length) {
+    tips.push(`🚨 Contains allergens: ${allergens.join(", ")}`);
+  }
+
+  if (tips.length === 0) {
+    tips.push("✅ Suitable for occasional consumption.");
+  }
+  return tips;
 }
