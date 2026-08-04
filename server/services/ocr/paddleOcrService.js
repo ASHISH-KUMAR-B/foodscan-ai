@@ -1,33 +1,3 @@
-// import axios from "axios";
-// import FormData from "form-data";
-// import fs from "fs";
-
-// const OCR_SERVICE_URL = process.env.OCR_SERVICE_URL || "http://localhost:8001";
-
-// export async function extractText(imagePath) {
-//   try {
-//     const formData = new FormData();
-//     formData.append("file", fs.createReadStream(imagePath));
-
-//     const response = await axios.post(`${OCR_SERVICE_URL}/ocr`, formData, {
-//       headers: formData.getHeaders(),
-//       timeout: 1200000, // 2 minutes timeout
-//     });
-
-//     if (!response.data?.success) {
-//       throw new Error("OCR service returned unsuccessful response.");
-//     }
-
-//     return response.data.text || "";
-//   } catch (error) {
-//     console.error(
-//       "PaddleOCR service error:",
-//       error.response?.data || error.message
-//     );
-//     throw new Error("OCR processing failed.", { cause: error });
-//   }
-// }
-
 import axios from "axios";
 import FormData from "form-data";
 import fs from "fs";
