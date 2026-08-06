@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import * as Sentry from "@sentry/node";
 import authRoutes from "./routes/authRoutes.js";
 import scanRoutes from "./routes/scanRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
@@ -26,6 +27,9 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/history", historyRoutes);
 app.use("/api/ai", aiInsightsRoutes);
 app.use("/api/ai", paddleAiRoutes);
+
+Sentry.setupExpressErrorHandler(app);
+
 app.get("/", (req, res) => {
   res.json({
     success: true,
