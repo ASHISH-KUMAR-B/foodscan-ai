@@ -10,6 +10,13 @@ import { queryClient } from "./lib/queryClient.js";
 
 import "./i18n/config.js";
 import "./index.css";
+import * as Sentry from "@sentry/react";
+
+Sentry.init({
+  dsn: import.meta.env.VITE_SENTRY_DSN_FRONTEND,
+  environment: import.meta.env.MODE,
+  tracesSampleRate: 1.0,
+});
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
